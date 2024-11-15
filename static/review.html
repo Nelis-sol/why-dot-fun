@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Review drafts</title>
+	<link rel="stylesheet" href="review.css">
+</head>
+
+<body>
+	<main>
+		<h1>Review drafts</h1>
+		<video id="video" controls>
+			<source type="video/mp4">
+		</video>
+		<input type="text" id="comment" placeholder="Comment">
+		<div class="controls">
+			<button id="approve">
+				<span>Approve</span>
+				<div id="approve-loader" class="loader"></div>
+			</button>
+			<button id="reject">
+				<span>Reject</span>
+				<div id="reject-loader" class="loader"></div>
+			</button>
+		</div>
+	</main>
+	<script src="review.js"></script>
+</body>
+
+</html>
