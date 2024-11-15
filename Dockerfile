@@ -10,14 +10,23 @@ RUN cargo chef prepare --recipe-path recipe.json
 
 # Builder stage for building the application
 FROM chef as builder
+WORKDIR /app
+
+# Copy the dependency recipe for cargo-chef
 COPY --from=planner /app/recipe.json recipe.json
+
+# Build all dependencies based on the recipe for caching
 RUN cargo chef cook --release --recipe-path recipe.json
 
-# Copy application source and build the final binary
+# Copy application source code, including the `twilio` directory
 COPY . .
+COPY ./twilio ./twilio
 
+# Build the application
 RUN cargo build --release
-FROM lukemathwalker/cargo-chef:latest-rust-1.82.0 AS runtime
+
+# Final runtime stage
+FROM lukemathwalker/cargo-chef:latest-rust-1.82.0 as runtime
 WORKDIR /app
 
 # Install only necessary runtime dependencies
@@ -37,5 +46,5 @@ COPY --from=builder /app/target/release/gamecall gamecall
 # Expose the port your application is listening on (replace 8080 with your actual port)
 EXPOSE 8080
 
-# Set the command to run your API
+# Set the command to run your application
 CMD ["./gamecall"]
