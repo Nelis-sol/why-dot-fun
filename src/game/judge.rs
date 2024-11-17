@@ -1,4 +1,5 @@
-use crate::{cache::CachedCall, CONFIG};
+use crate::{cache::CachedCall, database::Sponsor, CONFIG};
+use anyhow::{Context, Result};
 use async_openai::{
     config::OpenAIConfig,
     types::{CreateChatCompletionRequestArgs, ResponseFormat, ResponseFormatJsonSchema},
@@ -9,10 +10,10 @@ use serde::Deserialize;
 use serde_json::json;
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::Mutex;
-use twilio::{twiml::Twiml, Call, Client, OutboundMessage};
+use twilio::{twiml::Twiml, Call, Client as TwilioClient, OutboundMessage};
 
 pub async fn judge_handler(
-    twilio: Extension<Client>,
+    twilio: Extension<TwilioClient>,
     openai: Extension<OpenAIClient<OpenAIConfig>>,
     cache: Extension<Arc<Mutex<HashMap<String, CachedCall>>>>,
     request: Request,
@@ -31,7 +32,7 @@ pub async fn judge_handler(
             };
 
             cached_call.write_subtitles_to_file(&call.sid);
-            tokio::spawn(judge_conversation(twilio, call.from, openai, cached_call));
+            tokio::spawn(judge_conversation(twilio.0, call.from, openai, cached_call));
 
             Twiml::new()
         })
@@ -44,7 +45,7 @@ pub struct JudgeResponse {
 }
 
 async fn judge_conversation(
-    twilio: Extension<Client>,
+    twilio: TwilioClient,
     caller_phone_number: String,
     openai: Extension<OpenAIClient<OpenAIConfig>>,
     cached_call: CachedCall,
@@ -96,15 +97,52 @@ async fn judge_conversation(
     let judged: JudgeResponse =
         serde_json::from_str(&content).expect("Failed to judge conversation");
 
+    let result = match judged.won_prize {
+        true => won_handler(twilio, caller_phone_number, cached_call.sponsor).await,
+        false => lost_handler(twilio, caller_phone_number, cached_call.sponsor).await,
+    };
+
+    if let Err(e) = result {
+        log::error!("Failed to handle call judge result: {e:?}");
+    }
+}
+
+async fn won_handler(
+    twilio: TwilioClient,
+    caller_phone_number: String,
+    sponsor: Sponsor,
+) -> Result<()> {
     twilio
         .send_message(OutboundMessage {
             from: CONFIG.settings.phone_number,
             to: &caller_phone_number,
-            body: match judged.won_prize {
-                true => &cached_call.sponsor.won_text,
-                false => &cached_call.sponsor.lost_text,
-            },
+            body: &sponsor.won_text,
         })
         .await
-        .expect("Failed to send message");
+        .context("Sending message")?;
+
+    // Further actions
+    // ...
+
+    Ok(())
+}
+
+async fn lost_handler(
+    twilio: TwilioClient,
+    caller_phone_number: String,
+    sponsor: Sponsor,
+) -> Result<()> {
+    twilio
+        .send_message(OutboundMessage {
+            from: CONFIG.settings.phone_number,
+            to: &caller_phone_number,
+            body: &sponsor.lost_text,
+        })
+        .await
+        .context("Sending message")?;
+
+    // Further actions
+    // ...
+
+    Ok(())
 }

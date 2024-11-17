@@ -32,7 +32,7 @@ pub async fn upload_video(
         append_video_upload(reqwest.clone(), oauth.clone(), media_id, i, chunk).await?;
     }
 
-    finalize_video_upload(reqwest.clone(), oauth.clone(), media_id).await;
+    finalize_video_upload(reqwest.clone(), oauth.clone(), media_id).await?;
     wait_video_upload_successful(reqwest.clone(), oauth.clone(), media_id).await?;
 
     Ok(media_id)
