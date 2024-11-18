@@ -36,6 +36,31 @@ impl Database {
         .fetch_one(&self.pool)
         .await?)
     }
+
+    /// Withdraws the reward tokens from the sponsor with the given ID.
+    /// Returns an error if there was a communication error with the database.
+    /// Returns `None` if the sponsor does not have enough available tokens to withdraw.
+    /// Returns the amount of withdrawn tokens if the sponsor has enough available tokens.
+    pub async fn withdraw_tokens(&self, sponsor_id: i32) -> Result<Option<WithdrawnTokens>> {
+        Ok(sqlx::query_as!(
+            WithdrawnTokens,
+            r#"
+                UPDATE sponsors
+                SET available_tokens = available_tokens - reward_tokens
+                WHERE id = $1
+                AND available_tokens >= reward_tokens
+                RETURNING reward_tokens AS amount
+            "#,
+            sponsor_id
+        )
+        .fetch_optional(&self.pool)
+        .await?)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct WithdrawnTokens {
+    pub amount: i32,
 }
 
 #[allow(unused)]
