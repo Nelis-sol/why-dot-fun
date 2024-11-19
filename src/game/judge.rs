@@ -1,8 +1,4 @@
-use crate::{
-    cache::CachedCall,
-    database::{Database, Sponsor},
-    CONFIG,
-};
+use crate::{cache::CachedCall, database::Database, CONFIG};
 use anyhow::{Context, Result};
 use async_openai::{
     config::OpenAIConfig,
@@ -86,7 +82,7 @@ async fn judge_conversation(
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(CONFIG.end.max_tokens as u32)
         .model(CONFIG.end.model)
-        .messages(cached_call.messages)
+        .messages(cached_call.messages.clone())
         .response_format(response_format)
         .build()
         .expect("Failed to build chat completion request");
@@ -110,8 +106,8 @@ async fn judge_conversation(
         serde_json::from_str(&content).expect("Failed to judge conversation");
 
     let result = match judged.won_prize {
-        true => won_handler(twilio, database, caller_phone_number, cached_call.sponsor).await,
-        false => lost_handler(twilio, database, caller_phone_number, cached_call.sponsor).await,
+        true => won_handler(twilio, database, caller_phone_number, cached_call).await,
+        false => lost_handler(twilio, database, caller_phone_number, cached_call).await,
     };
 
     if let Err(e) = result {
@@ -123,23 +119,39 @@ async fn won_handler(
     twilio: TwilioClient,
     database: Database,
     caller_phone_number: String,
-    sponsor: Sponsor,
+    cached_call: CachedCall,
 ) -> Result<()> {
-    log::debug!("Won prize for sponsor: {}", sponsor.name);
+    log::debug!("Won prize for sponsor: {}", cached_call.sponsor.name);
 
     // Withdraw tokens from the sponsor
     let withdrawn = database
-        .withdraw_tokens(sponsor.id)
+        .withdraw_tokens(cached_call.sponsor.id)
         .await
         .context("Withdrawing tokens")?;
 
-    let text = match withdrawn {
-        Some(tokens) => {
-            log::debug!("Withdrew {} tokens", tokens.amount,);
-            sponsor.won_text
-        }
-        None => return lost_handler(twilio, database, caller_phone_number, sponsor).await,
+    // If withdrawing tokens failed, redirect to lost handler
+    if withdrawn.is_none() {
+        return lost_handler(twilio, database, caller_phone_number, cached_call).await;
     };
+
+    // Generate a winner entry in the database
+    let winner = database
+        .create_winner(cached_call.name.clone(), cached_call.sponsor.id)
+        .await
+        .context("Creating winner")?;
+
+    // Generate the winning link
+    let link = format!(
+        "{}/claim?key={}",
+        CONFIG.settings.global_address, winner.key
+    );
+
+    // Generate the winning text
+    let text = cached_call
+        .sponsor
+        .won_text
+        .replace("{name}", &cached_call.name)
+        .replace("{link}", &link);
 
     twilio
         .send_message(OutboundMessage {
@@ -157,20 +169,24 @@ async fn lost_handler(
     twilio: TwilioClient,
     _database: Database,
     caller_phone_number: String,
-    sponsor: Sponsor,
+    cached_call: CachedCall,
 ) -> Result<()> {
-    log::debug!("Lost prize for sponsor: {}", sponsor.name);
+    log::debug!("Lost prize for sponsor: {}", cached_call.sponsor.name);
+
+    // Generate the loosing text
+    let text = cached_call
+        .sponsor
+        .lost_text
+        .replace("{name}", &cached_call.name);
+
     twilio
         .send_message(OutboundMessage {
             from: CONFIG.settings.phone_number,
             to: &caller_phone_number,
-            body: &sponsor.lost_text,
+            body: &text,
         })
         .await
         .context("Sending message")?;
-
-    // Further actions
-    // ...
 
     Ok(())
 }

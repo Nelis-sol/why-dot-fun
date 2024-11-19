@@ -59,13 +59,14 @@ pub async fn name_handler(
             log::debug!("Extracted name: {:?}", name);
 
             // Generate the response based on the extracted name
-            let (twiml, response) = generate_name_response(name, sponsor).await;
+            let (twiml, response) = generate_name_response(name.clone(), sponsor).await;
 
             // Update the conversation cache
             update_conversation_cache(
                 &cache,
                 call.sid,
                 call.speech_result.unwrap_or_default(),
+                name,
                 response,
             )
             .await;
@@ -82,12 +83,17 @@ async fn update_conversation_cache(
     cache: &Arc<Mutex<HashMap<String, CachedCall>>>,
     call_sid: String,
     user_message: String,
+    name: Option<String>,
     assistant_message: String,
 ) {
     let mut cache = cache.lock().await;
     let cached_call = cache
         .get_mut(&call_sid)
         .expect("Failed to get message conversation");
+
+    if let Some(name) = name {
+        cached_call.name = name;
+    }
 
     cached_call.add_user_message(
         ChatCompletionRequestUserMessageArgs::default()

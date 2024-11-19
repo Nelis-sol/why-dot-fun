@@ -37,6 +37,52 @@ impl Database {
         .await?)
     }
 
+    /// Gets the sponsor with the given ID from the database.
+    pub async fn get_sponsor_by_id(&self, id: i32) -> Result<Sponsor> {
+        Ok(sqlx::query_as!(
+            Sponsor,
+            r#"
+                SELECT * FROM sponsors
+                WHERE id = $1
+            "#,
+            id
+        )
+        .fetch_one(&self.pool)
+        .await?)
+    }
+
+    /// Creates a new winner in the database with the given name and sponsor ID.
+    /// Uses a random UUID as the private key that the user can use to claim their reward.
+    pub async fn create_winner(&self, name: String, sponsor_id: i32) -> Result<Winner> {
+        Ok(sqlx::query_as!(
+            Winner,
+            r#"
+                INSERT INTO winners (key, name, sponsor_id)
+                VALUES (gen_random_uuid(), $1, $2)
+                RETURNING *
+            "#,
+            name,
+            sponsor_id
+        )
+        .fetch_one(&self.pool)
+        .await?)
+    }
+
+    /// Gets the winner with the given key from the database.
+    /// Returns `None` if there is no winner with the given key.
+    pub async fn get_winner_by_key(&self, key: &str) -> Result<Option<Winner>> {
+        Ok(sqlx::query_as!(
+            Winner,
+            r#"
+                SELECT * FROM winners
+                WHERE key = $1
+            "#,
+            key
+        )
+        .fetch_optional(&self.pool)
+        .await?)
+    }
+
     /// Withdraws the reward tokens from the sponsor with the given ID.
     /// Returns an error if there was a communication error with the database.
     /// Returns `None` if the sponsor does not have enough available tokens to withdraw.
@@ -58,6 +104,7 @@ impl Database {
     }
 }
 
+#[allow(unused)]
 #[derive(Debug, Clone)]
 pub struct WithdrawnTokens {
     pub amount: i32,
@@ -81,4 +128,13 @@ pub struct Sponsor {
     pub end_text: String,
     pub won_text: String,
     pub lost_text: String,
+}
+
+#[allow(unused)]
+#[derive(Debug, Clone)]
+pub struct Winner {
+    pub id: i32,
+    pub key: String,
+    pub name: String,
+    pub sponsor_id: i32,
 }

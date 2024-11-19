@@ -8,6 +8,7 @@ use std::time::Instant;
 
 #[derive(Debug, Clone)]
 pub struct CachedCall {
+    pub name: String,
     pub sponsor: Sponsor,
     pub start: Instant,
     pub messages: Vec<ChatCompletionRequestMessage>,
@@ -24,6 +25,7 @@ impl CachedCall {
     pub fn new(sponsor: Sponsor) -> Self {
         Self {
             sponsor,
+            name: String::new(),
             start: Instant::now(),
             messages: Vec::new(),
             timestamps: Vec::new(),

@@ -14,6 +14,7 @@ use twitter_v2::{authorization::Oauth1aToken, TwitterApi};
 static_toml! { static CONFIG = include_toml!("Config.toml"); }
 
 mod cache;
+mod claim;
 mod database;
 mod game;
 mod review;
@@ -81,6 +82,7 @@ async fn main() {
             "/redirect-gather/*path",
             post(game::gather::redirect_gather_handler),
         )
+        .nest_service("/claim", claim::router())
         .nest_service("/review", review::router())
         .nest_service("/static", ServeDir::new("static"))
         .layer(Extension(secrets))

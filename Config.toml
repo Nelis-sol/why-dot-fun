@@ -1,7 +1,7 @@
 [settings]
-phone_number = "+3197010255633"
+phone_number = "+19528003590"
 local_address = "0.0.0.0:8080"
-global_address = "https://gamecall-jvp99.ondigitalocean.app"
+global_address = "https://commonly-eminent-kite.ngrok-free.app"
 language = "en-US"
 voice = "Polly.Matthew"
 speech_model = "experimental_conversations"
