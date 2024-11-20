@@ -21,6 +21,7 @@ RUN cargo chef cook --release --recipe-path recipe.json
 # Copy application source code, including the `twilio` directory
 COPY . .
 COPY ./twilio ./twilio
+COPY ./static ./static
 
 RUN cargo install sqlx-cli
 ENV DATABASE_URL=postgresql://doadmin:AVNS_JOTLcN1fxfFzVEUCbM9@db-postgresql-ams3-30283-do-user-9835208-0.h.db.ondigitalocean.com:25060/voicecall?sslmode=require
