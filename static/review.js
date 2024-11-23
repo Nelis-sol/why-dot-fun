@@ -5,8 +5,6 @@ const comment = document.getElementById("comment");
 const approveLoader = document.getElementById("approve-loader");
 const rejectLoader = document.getElementById("reject-loader");
 
-var call_sid = null;
-
 approveButton.addEventListener("click", async () => {
 	await processDraft("approve", approveLoader);
 });
@@ -24,7 +22,7 @@ async function processDraft(action, loader) {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				call_sid,
+				call_sid: video.dataset.callSid,
 				comment: comment.value,
 			}),
 		});
@@ -32,31 +30,6 @@ async function processDraft(action, loader) {
 		console.error(error);
 	}
 	loader.style.display = "none";
-	await fetchNextDraft();
+	window.location.reload();
 }
 
-async function fetchNextDraft() {
-	try {
-		const response = await fetch("/review/next", {
-			method: "GET",
-		});
-
-		if (response.ok) {
-			const data = await response.json();
-			call_sid = data.call_sid;
-			video.src = `/review/drafts/${call_sid}.mp4`;
-			comment.value = data.comment;
-			approveButton.disabled = false;
-			rejectButton.disabled = false;
-		} else {
-			call_sid = null;
-			video.src = "";
-			approveButton.disabled = true;
-			rejectButton.disabled = true;
-		}
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-fetchNextDraft();

@@ -1,4 +1,5 @@
 use crate::secrets::Secrets;
+use askama::Template;
 use axum::{
     extract::Request,
     http::StatusCode,
@@ -17,14 +18,14 @@ mod twitter;
 
 pub fn router() -> Router {
     Router::new()
-        .route("/next", get(next_draft))
+        .route("/", get(render_draft))
         .route("/approve", post(approve_draft))
         .route("/reject", post(reject_draft))
         .nest_service("/drafts", ServeDir::new("cache/drafts"))
         .layer(middleware::from_fn(check_token))
 }
 
-async fn next_draft() -> Result<Json<Draft>, StatusCode> {
+async fn render_draft() -> Result<Draft, StatusCode> {
     let mut dir = tokio::fs::read_dir("cache/drafts")
         .await
         .map_err(|_| StatusCode::NOT_FOUND)?;
@@ -35,20 +36,17 @@ async fn next_draft() -> Result<Json<Draft>, StatusCode> {
         .map_err(|_| StatusCode::NOT_FOUND)?
         .ok_or(StatusCode::NOT_FOUND)?;
 
-    let file_name = entry
+    let call_sid = entry
         .file_name()
         .into_string()
         .map(|s| s.trim_end_matches(".mp4").to_string())
         .map_err(|_| StatusCode::NOT_FOUND)?;
 
-    let comment = tokio::fs::read_to_string(format!("cache/recordings/{}/comment.txt", file_name))
+    let comment = tokio::fs::read_to_string(format!("cache/recordings/{call_sid}/comment.txt"))
         .await
         .map_err(|_| StatusCode::NOT_FOUND)?;
 
-    Ok(Json(Draft {
-        call_sid: file_name,
-        comment,
-    }))
+    Ok(Draft { call_sid, comment })
 }
 
 async fn approve_draft(
@@ -97,7 +95,8 @@ async fn check_token(
     Ok(next.run(request).await)
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Template)]
+#[template(path = "review.html")]
 pub struct Draft {
     call_sid: String,
     comment: String,

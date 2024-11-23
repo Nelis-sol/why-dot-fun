@@ -6,16 +6,16 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Review drafts</title>
-	<link rel="stylesheet" href="review.css">
+	<link rel="stylesheet" href="/static/review.css">
 </head>
 
 <body>
 	<main>
 		<h1>Review drafts</h1>
-		<video id="video" controls>
-			<source type="video/mp4">
+		<video id="video" controls data-call-sid="{{ call_sid }}">
+			<source type="video/mp4" src="/review/drafts/{{ call_sid }}.mp4">
 		</video>
-		<input type="text" id="comment" placeholder="Comment">
+		<input type="text" id="comment" placeholder="Comment" value="{{ comment }}">
 		<div class="controls">
 			<button id="approve">
 				<span>Approve</span>
@@ -27,7 +27,7 @@
 			</button>
 		</div>
 	</main>
-	<script src="review.js"></script>
+	<script src="/static/review.js"></script>
 </body>
 
 </html>
