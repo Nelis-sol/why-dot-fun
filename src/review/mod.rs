@@ -22,7 +22,7 @@ pub fn router() -> Router {
         .route("/", get(render_draft))
         .route("/approve", post(approve_draft))
         .route("/reject", post(reject_draft))
-        .nest_service("/drafts", ServeDir::new("app/cache/drafts"))
+        .nest_service("/drafts", ServeDir::new("cache/drafts"))
         .layer(middleware::from_fn(check_token))
 }
 
@@ -36,7 +36,7 @@ async fn render_draft() -> Result<DraftTemplate, StatusCode> {
 }
 
 async fn get_next_draft() -> Result<Option<Draft>> {
-    let mut dir = tokio::fs::read_dir("app/cache/drafts")
+    let mut dir = tokio::fs::read_dir("cache/drafts")
         .await
         .context("Failed to read drafts directory")?;
 
@@ -57,7 +57,7 @@ async fn get_next_draft() -> Result<Option<Draft>> {
         .trim_end_matches(".mp4")
         .to_string();
 
-    let comment = tokio::fs::read_to_string(format!("app/cache/recordings/{call_sid}/comment.txt"))
+    let comment = tokio::fs::read_to_string(format!("cache/recordings/{call_sid}/comment.txt"))
         .await
         .context("Failed to read comment file")?;
 
@@ -86,14 +86,14 @@ async fn approve_draft(
     }
 
     log::debug!("Tweet posted successfully");
-    let _ = tokio::fs::remove_file(format!("app/cache/drafts/{}.mp4", draft.call_sid)).await;
-    let _ = tokio::fs::remove_dir_all(format!("app/cache/recordings/{}", draft.call_sid)).await;
+    let _ = tokio::fs::remove_file(format!("cache/drafts/{}.mp4", draft.call_sid)).await;
+    let _ = tokio::fs::remove_dir_all(format!("cache/recordings/{}", draft.call_sid)).await;
 }
 
 async fn reject_draft(draft: Json<Draft>) {
     log::debug!("Rejecting draft {}", draft.call_sid);
-    let _ = tokio::fs::remove_file(format!("app/cache/drafts/{}.mp4", draft.call_sid)).await;
-        let _ = tokio::fs::remove_dir_all(format!("app/cache/recordings/{}", draft.call_sid)).await;
+    let _ = tokio::fs::remove_file(format!("cache/drafts/{}.mp4", draft.call_sid)).await;
+        let _ = tokio::fs::remove_dir_all(format!("cache/recordings/{}", draft.call_sid)).await;
 }
 
 async fn check_token(

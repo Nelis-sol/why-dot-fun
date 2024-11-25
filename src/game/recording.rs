@@ -58,14 +58,14 @@ pub async fn recording_handler(
                 .expect("Failed to download recording");
 
             let _ =
-                tokio::fs::create_dir_all(format!("app/cache/recordings/{}", recording.call_sid)).await;
-            let _ = tokio::fs::create_dir_all("app/cache/drafts").await;
+                tokio::fs::create_dir_all(format!("cache/recordings/{}", recording.call_sid)).await;
+            let _ = tokio::fs::create_dir_all("cache/drafts").await;
 
-            let audio_path = format!("app/cache/recordings/{}/audio.mp3", recording.call_sid);
-            let background_path = format!("app/cache/recordings/{}/background.{extension}", recording.call_sid);
-            let subtitles_path = format!("app/cache/recordings/{}/subtitles.srt", recording.call_sid);
-            let comment_path = format!("app/cache/recordings/{}/comment.txt", recording.call_sid);
-            let output_path = format!("app/cache/drafts/{}.mp4", recording.call_sid);
+            let audio_path = format!("cache/recordings/{}/audio.mp3", recording.call_sid);
+            let background_path = format!("cache/recordings/{}/background.{extension}", recording.call_sid);
+            let subtitles_path = format!("cache/recordings/{}/subtitles.srt", recording.call_sid);
+            let comment_path = format!("cache/recordings/{}/comment.txt", recording.call_sid);
+            let output_path = format!("cache/drafts/{}.mp4", recording.call_sid);
 
             // Write the audio, background and comment to disk
             tokio::fs::write(&audio_path, mp3)
