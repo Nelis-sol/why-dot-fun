@@ -1,4 +1,5 @@
 use crate::secrets::Secrets;
+use anyhow::{anyhow, Context, Result};
 use askama::Template;
 use axum::{
     extract::Request,
@@ -25,28 +26,42 @@ pub fn router() -> Router {
         .layer(middleware::from_fn(check_token))
 }
 
-async fn render_draft() -> Result<Draft, StatusCode> {
+async fn render_draft() -> Result<DraftTemplate, StatusCode> {
+    Ok(DraftTemplate {
+        draft: get_next_draft().await.map_err(|e| {
+            log::error!("Failed to get next draft: {:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?,
+    })
+}
+
+async fn get_next_draft() -> Result<Option<Draft>> {
     let mut dir = tokio::fs::read_dir("cache/drafts")
         .await
-        .map_err(|_| StatusCode::NOT_FOUND)?;
+        .context("Failed to read drafts directory")?;
 
     let entry = dir
         .next_entry()
         .await
-        .map_err(|_| StatusCode::NOT_FOUND)?
-        .ok_or(StatusCode::NOT_FOUND)?;
+        .context("Failed to read next draft directory entry")?;
+
+    let entry = match entry {
+        Some(entry) => entry,
+        None => return Ok(None),
+    };
 
     let call_sid = entry
         .file_name()
         .into_string()
-        .map(|s| s.trim_end_matches(".mp4").to_string())
-        .map_err(|_| StatusCode::NOT_FOUND)?;
+        .map_err(|_| anyhow!("Failed to convert file name to string"))?
+        .trim_end_matches(".mp4")
+        .to_string();
 
     let comment = tokio::fs::read_to_string(format!("cache/recordings/{call_sid}/comment.txt"))
         .await
-        .map_err(|_| StatusCode::NOT_FOUND)?;
+        .context("Failed to read comment file")?;
 
-    Ok(Draft { call_sid, comment })
+    Ok(Some(Draft { call_sid, comment }))
 }
 
 async fn approve_draft(
@@ -97,6 +112,11 @@ async fn check_token(
 
 #[derive(Debug, Deserialize, Serialize, Template)]
 #[template(path = "review.html")]
+pub struct DraftTemplate {
+    draft: Option<Draft>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Draft {
     call_sid: String,
     comment: String,

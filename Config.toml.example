@@ -1,0 +1,27 @@
+[settings]
+phone_number = "+19528003590"
+local_address = "0.0.0.0:8080"
+global_address = "https://commonly-eminent-kite.ngrok-free.app"
+language = "en-US"
+voice = "Polly.Matthew"
+speech_model = "experimental_conversations"
+timeout = 30
+record_retry = 5
+
+[name]
+max_tokens = 512
+model = "gpt-4o-mini"
+schema_property = "The name of the user"
+
+[challenge]
+max_tokens = 512
+model = "gpt-3.5-turbo"
+
+[end]
+max_tokens = 512
+model = "gpt-4o-mini"
+schema_description = "Analyzes the previous conversation and determines if the player won the prize"
+schema_property = "Whether the player won the prize"
+
+[texts]
+name_not_found = "I'm sorry, I didn't catch your name. Please tell me your name to start the game."

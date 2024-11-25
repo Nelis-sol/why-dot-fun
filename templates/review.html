@@ -12,22 +12,27 @@
 <body>
 	<main>
 		<h1>Review drafts</h1>
-		<video id="video" controls data-call-sid="{{ call_sid }}">
-			<source type="video/mp4" src="/review/drafts/{{ call_sid }}.mp4">
-		</video>
-		<input type="text" id="comment" placeholder="Comment" value="{{ comment }}">
-		<div class="controls">
-			<button id="approve">
-				<span>Approve</span>
-				<div id="approve-loader" class="loader"></div>
-			</button>
-			<button id="reject">
-				<span>Reject</span>
-				<div id="reject-loader" class="loader"></div>
-			</button>
-		</div>
+		{% match draft %}
+			{% when Some with (draft) %}
+				<video id="video" controls data-call-sid="{{ draft.call_sid }}">
+					<source type="video/mp4" src="/review/drafts/{{ draft.call_sid }}.mp4">
+				</video>
+				<input type="text" id="comment" placeholder="Comment" value="{{ draft.comment }}">
+				<div class="controls">
+					<button id="approve">
+						<span>Approve</span>
+						<div id="approve-loader" class="loader"></div>
+					</button>
+					<button id="reject">
+						<span>Reject</span>
+						<div id="reject-loader" class="loader"></div>
+					</button>
+				</div>
+				<script src="/static/review.js"></script>
+			{% when None %}
+				<p>No drafts to review</p>
+		{% endmatch %}
 	</main>
-	<script src="/static/review.js"></script>
 </body>
 
 </html>
