@@ -103,6 +103,6 @@ async fn main() {
         .expect("Failed to start the server");
 }
 
-async fn health_check() -> impl IntoResponse {
+pub async fn health_check() -> impl IntoResponse {
     StatusCode::OK
 }
