@@ -1,6 +1,6 @@
 [settings]
 phone_number = "+19528003590"
-local_address = "0.0.0.0:8080"
+local_address = "127.0.0.1:8281"
 global_address = "https://commonly-eminent-kite.ngrok-free.app"
 language = "en-US"
 voice = "Polly.Matthew"
