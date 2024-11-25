@@ -1,5 +1,5 @@
 use async_openai::Client as OpenaiClient;
-use axum::{routing::post, Extension, Router};
+use axum::{routing::{get, post}, Extension, Router};
 use cache::CachedCall;
 use database::Database;
 use reqwest::Client as ReqwestClient;
@@ -10,6 +10,8 @@ use tokio::{net::TcpListener, sync::Mutex};
 use tower_http::services::ServeDir;
 use twilio::Client as TwilioClient;
 use twitter_v2::{authorization::Oauth1aToken, TwitterApi};
+use axum::response::IntoResponse;
+use reqwest::StatusCode;
 
 static_toml! { static CONFIG = include_toml!("Config.toml"); }
 
@@ -71,6 +73,7 @@ async fn main() {
     // Initialize the webserver routes
     log::info!("Initializing the webserver routes");
     let router = Router::new()
+        .route("/health_check", get(health_check))
         .route("/start", post(game::start::start_handler))
         .route("/name", post(game::name::name_handler))
         .route("/challenge/start", post(game::challenge::start_handler))
@@ -98,4 +101,8 @@ async fn main() {
     axum::serve(tcp, router.into_make_service())
         .await
         .expect("Failed to start the server");
+}
+
+async fn health_check() -> impl IntoResponse {
+    StatusCode::OK
 }
