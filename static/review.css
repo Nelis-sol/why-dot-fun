@@ -6,7 +6,7 @@ body {
 }
 
 main {
-	width: min(90%, 800px);
+	max-width: 800px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -14,9 +14,18 @@ main {
 
 }
 
+.draft {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1rem;
+	background: #222;
+	border-radius: 10px;
+}
+
 video {
 	width: 100%;
-	border-radius: 4px;
+	border-radius: 10px;
 }
 
 input {
@@ -40,6 +49,14 @@ input {
 
 }
 
+form {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	align-items: center;
+}
+
 .controls {
 	display: flex;
 	gap: .5rem;
@@ -52,8 +69,6 @@ button {
 	cursor: pointer;
 	outline: 0;
 	color: #fff;
-	background-color: #0d6efd;
-	border-color: #0d6efd;
 	font-weight: 400;
 	line-height: 1.5;
 	text-align: center;
@@ -62,13 +77,14 @@ button {
 	font-size: 16px;
 	border-radius: .25rem;
 	transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
 
-	:hover {
-		color: #fff;
-		background-color: #0b5ed7;
-		border-color: #0a58ca;
-	}
+.approve-button {
+	background-color: lightseagreen;
+}
 
+.reject-button {
+	background-color: lightcoral;
 }
 
 .loader {

@@ -12,26 +12,26 @@
 <body>
 	<main>
 		<h1>Review drafts</h1>
-		{% match draft %}
-			{% when Some with (draft) %}
-				<video id="video" controls data-call-sid="{{ draft.call_sid }}">
-					<source type="video/mp4" src="/review/drafts/{{ draft.call_sid }}.mp4">
-				</video>
-				<input type="text" id="comment" placeholder="Comment" value="{{ draft.comment }}">
+
+		{% if drafts.is_empty() %}
+		<p>No drafts to review</p>
+		{% endif %}
+
+		{% for draft in drafts %}
+		<div class="draft">
+			<video class="video" controls>
+				<source type="video/mp4" src="/review/drafts/{{ draft.call_sid }}.mp4">
+			</video>
+			<form method="post">
+				<input type="text" name="comment" class="comment" placeholder="Comment" value="{{ draft.comment }}">
+				<input type="hidden" name="call_sid" value="{{ draft.call_sid }}">
 				<div class="controls">
-					<button id="approve">
-						<span>Approve</span>
-						<div id="approve-loader" class="loader"></div>
-					</button>
-					<button id="reject">
-						<span>Reject</span>
-						<div id="reject-loader" class="loader"></div>
-					</button>
+					<button type="submit" class="approve-button" formaction="/review/approve">Approve</button>
+					<button type="submit" class="reject-button" formaction="/review/reject">Reject</button>
 				</div>
-				<script src="/static/review.js"></script>
-			{% when None %}
-				<p>No drafts to review</p>
-		{% endmatch %}
+			</form>
+		</div>
+		{% endfor %}
 	</main>
 </body>
 
