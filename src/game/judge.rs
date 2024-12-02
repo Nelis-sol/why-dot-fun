@@ -1,4 +1,4 @@
-use crate::{cache::CachedCall, database::Database, CONFIG};
+use crate::{cache::CachedCall, database::Database, secrets::Secrets, CONFIG};
 use anyhow::{Context, Result};
 use async_openai::{
     config::OpenAIConfig,
@@ -17,6 +17,7 @@ pub async fn judge_handler(
     openai: Extension<OpenAIClient<OpenAIConfig>>,
     cache: Extension<Arc<Mutex<HashMap<String, CachedCall>>>>,
     database: Extension<Database>,
+    secrets: Extension<Secrets>,
     request: Request,
 ) -> impl IntoResponse {
     twilio
@@ -38,6 +39,7 @@ pub async fn judge_handler(
                 call.from,
                 openai.0,
                 database.0,
+                secrets.0,
                 cached_call,
             ));
 
@@ -56,6 +58,7 @@ async fn judge_conversation(
     caller_phone_number: String,
     openai: OpenAIClient<OpenAIConfig>,
     database: Database,
+    secrets: Secrets,
     cached_call: CachedCall,
 ) {
     let schema = json!({
@@ -106,8 +109,8 @@ async fn judge_conversation(
         serde_json::from_str(&content).expect("Failed to judge conversation");
 
     let result = match judged.won_prize {
-        true => won_handler(twilio, database, caller_phone_number, cached_call).await,
-        false => lost_handler(twilio, database, caller_phone_number, cached_call).await,
+        true => won_handler(twilio, database, secrets, caller_phone_number, cached_call).await,
+        false => lost_handler(twilio, database, secrets, caller_phone_number, cached_call).await,
     };
 
     if let Err(e) = result {
@@ -118,6 +121,7 @@ async fn judge_conversation(
 async fn won_handler(
     twilio: TwilioClient,
     database: Database,
+    secrets: Secrets,
     caller_phone_number: String,
     cached_call: CachedCall,
 ) -> Result<()> {
@@ -131,7 +135,7 @@ async fn won_handler(
 
     // If withdrawing tokens failed, redirect to lost handler
     if withdrawn.is_none() {
-        return lost_handler(twilio, database, caller_phone_number, cached_call).await;
+        return lost_handler(twilio, database, secrets, caller_phone_number, cached_call).await;
     };
 
     // Generate a winner entry in the database
@@ -141,10 +145,7 @@ async fn won_handler(
         .context("Creating winner")?;
 
     // Generate the winning link
-    let link = format!(
-        "{}/claim?key={}",
-        CONFIG.settings.global_address, winner.key
-    );
+    let link = format!("{}/claim?key={}", secrets.global_url, winner.key);
 
     // Generate the winning text
     let text = cached_call
@@ -155,7 +156,7 @@ async fn won_handler(
 
     twilio
         .send_message(OutboundMessage {
-            from: CONFIG.settings.phone_number,
+            from: &secrets.twilio_phone_number,
             to: &caller_phone_number,
             body: &text,
         })
@@ -168,6 +169,7 @@ async fn won_handler(
 async fn lost_handler(
     twilio: TwilioClient,
     _database: Database,
+    secrets: Secrets,
     caller_phone_number: String,
     cached_call: CachedCall,
 ) -> Result<()> {
@@ -181,7 +183,7 @@ async fn lost_handler(
 
     twilio
         .send_message(OutboundMessage {
-            from: CONFIG.settings.phone_number,
+            from: &secrets.twilio_phone_number,
             to: &caller_phone_number,
             body: &text,
         })

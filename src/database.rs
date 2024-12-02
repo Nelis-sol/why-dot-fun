@@ -1,5 +1,6 @@
 use crate::secrets::Secrets;
 use anyhow::Result;
+use chrono::{DateTime, Utc};
 use sqlx::{postgres::PgPoolOptions, PgPool};
 
 #[derive(Debug, Clone)]
@@ -103,17 +104,18 @@ impl Database {
         .await?)
     }
 
-    /// Adds one attempt to the user with the given phone number. If the user was not yet in the
-    /// database, a new user is created with one attempt. Returns the updated or generated user.
-    pub async fn add_user_attempt(&self, phone_number: &str) -> Result<User> {
+    /// Gets the user with the given phone number from the database. Creates a new user if the
+    /// user does not yet exist in the database.
+    pub async fn get_or_insert_user_by_phone_number(&self, phone_number: &str) -> Result<User> {
         Ok(sqlx::query_as!(
             User,
             r#"
-                INSERT INTO users (phone_number, attempts, banned)
-                VALUES ($1, 1, false)
+                INSERT INTO users (phone_number, attempts_today, last_attempt, banned)
+                VALUES ($1, 1, now(), false)
                 ON CONFLICT (phone_number) DO UPDATE
-                SET attempts = users.attempts + 1
+                SET attempts_today = users.attempts_today + 1
                 RETURNING *
+                
             "#,
             phone_number
         )
@@ -121,20 +123,21 @@ impl Database {
         .await?)
     }
 
-    /// Checks if the user with the given phone number is banned. If the user was not yet in the
-    /// database, the user is considered not banned.
-    pub async fn is_user_banned(&self, phone_number: &str) -> Result<bool> {
-        Ok(sqlx::query!(
+    pub async fn update_user(&self, user: &User) -> Result<()> {
+        sqlx::query!(
             r#"
-                SELECT banned FROM users
-                WHERE phone_number = $1
+                UPDATE users
+                SET attempts_today = $1, last_attempt = now(), banned = $2
+                WHERE phone_number = $3
             "#,
-            phone_number
+            user.attempts_today,
+            user.banned,
+            user.phone_number
         )
-        .fetch_optional(&self.pool)
-        .await?
-        .map(|row| row.banned)
-        .unwrap_or(false))
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
     }
 }
 
@@ -177,6 +180,7 @@ pub struct Winner {
 #[derive(Debug, Clone)]
 pub struct User {
     pub phone_number: String,
-    pub attempts: i32,
+    pub attempts_today: i32,
+    pub last_attempt: DateTime<Utc>,
     pub banned: bool,
 }

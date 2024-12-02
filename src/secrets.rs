@@ -2,7 +2,9 @@ use std::env::var;
 
 #[derive(Debug, Clone)]
 pub struct Secrets {
+    pub global_url: String,
     pub database_url: String,
+    pub twilio_phone_number: String,
     pub twilio_account_id: String,
     pub twilio_auth_token: String,
     pub review_token: String,
@@ -15,7 +17,10 @@ pub struct Secrets {
 impl Secrets {
     pub fn from_env() -> Self {
         Self {
+            global_url: var("GLOBAL_URL").expect("GLOBAL_URL must be set"),
             database_url: var("DATABASE_URL").expect("DATABASE_URL must be set"),
+            twilio_phone_number: var("TWILIO_PHONE_NUMBER")
+                .expect("TWILIO_PHONE_NUMBER must be set"),
             twilio_account_id: var("TWILIO_ACCOUNT_ID").expect("TWILIO_ACCOUNT_ID must be set"),
             twilio_auth_token: var("TWILIO_AUTH_TOKEN").expect("TWILIO_AUTH_TOKEN must be set"),
             review_token: var("REVIEW_TOKEN").expect("REVIEW_TOKEN must be set"),

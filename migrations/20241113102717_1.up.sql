@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS winners (
 
 CREATE TABLE IF NOT EXISTS users (
 	phone_number TEXT NOT NULL PRIMARY KEY,
-	attempts INT NOT NULL,
+	attempts_today INT NOT NULL,
+	last_attempt TIMESTAMP WITH TIME ZONE NOT NULL,
 	banned BOOLEAN NOT NULL
 );
 

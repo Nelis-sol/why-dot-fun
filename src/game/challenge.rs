@@ -1,4 +1,4 @@
-use crate::{cache::CachedCall, CONFIG};
+use crate::{cache::CachedCall, secrets::Secrets, CONFIG};
 use async_openai::{
     config::OpenAIConfig,
     types::{
@@ -18,6 +18,7 @@ use twilio::{
 pub async fn start_handler(
     twilio: Extension<Client>,
     cache: Extension<Arc<Mutex<HashMap<String, CachedCall>>>>,
+    secrets: Extension<Secrets>,
     request: Request,
 ) -> impl IntoResponse {
     twilio
@@ -35,7 +36,7 @@ pub async fn start_handler(
                 // Start the timer that will redirect the call to the /end route
                 tokio::spawn(async move {
                     tokio::time::sleep(Duration::from_secs(challenge_time as _)).await;
-                    let url = format!("{}/end", CONFIG.settings.global_address);
+                    let url = format!("{}/end", secrets.global_url);
                     let _ = twilio.update_call_url(&call.sid, &url).await;
                 });
             }

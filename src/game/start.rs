@@ -1,12 +1,14 @@
 use crate::{
     cache::CachedCall,
     database::{Database, Sponsor},
+    secrets::Secrets,
     CONFIG,
 };
 use async_openai::types::{
     ChatCompletionRequestAssistantMessageArgs, ChatCompletionRequestSystemMessageArgs,
 };
 use axum::{extract::Request, response::IntoResponse, Extension};
+use chrono::Utc;
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::Mutex;
 use twilio::{
@@ -18,6 +20,7 @@ pub async fn start_handler(
     twilio: Extension<TwilioClient>,
     cache: Extension<Arc<Mutex<HashMap<String, CachedCall>>>>,
     database: Extension<Database>,
+    secrets: Extension<Secrets>,
     request: Request,
 ) -> impl IntoResponse {
     twilio
@@ -25,24 +28,48 @@ pub async fn start_handler(
         .respond_to_webhook_async(request, |call: Call| async move {
             log::debug!("Received call from {} with id {}", call.from, call.sid);
 
-            // Check if the user is calling from a banned number
-            if database
-                .is_user_banned(&call.from)
+            // Get or insert the user into the database
+            let mut user = database
+                .get_or_insert_user_by_phone_number(&call.from)
                 .await
-                .expect("Failed to check user ban status")
-            {
-                log::debug!("Reject call from banned user {}", call.from);
-                return generate_banned_twiml();
+                .expect("Failed to get or insert user");
+
+            log::debug!(
+                "User {} has {} attempts today, last attempt at {}",
+                user.phone_number,
+                user.attempts_today,
+                user.last_attempt
+            );
+
+            // If the user is banned, reject the call
+            if user.banned {
+                log::debug!("Rejecting call from banned user {}", user.phone_number);
+                return generate_reject_twiml();
             }
 
-            // Add one attempt to the user's profile, generating a new
-            // profile if the user does not yet exist in the database.
-            let user = database
-                .add_user_attempt(&call.from)
-                .await
-                .expect("Failed to add attempt");
+            // Reset the daily attempt count if the last attempt was not today
+            if user.last_attempt.date_naive() != Utc::now().date_naive() {
+                user.attempts_today = 1;
+            }
 
-            log::debug!("User {} has {} attempts", user.phone_number, user.attempts);
+            // Update the user in the database
+            database
+                .update_user(&user)
+                .await
+                .expect("Failed to update user");
+
+            // If the user has exceeded the daily response limit, reject the call
+            if user.attempts_today > CONFIG.settings.daily_response_limit as i32 {
+                log::debug!("Rejecting call from {} without response", call.from);
+                return generate_reject_twiml();
+            }
+
+            // If the user has exceeded the daily attempt limit, respond with a messsage
+            // notifying the user that they have exceeded the limit
+            if user.attempts_today > CONFIG.settings.daily_attempt_limit as i32 {
+                log::debug!("Rejecting call from {} with response", call.from);
+                return generate_out_of_attempts_twiml();
+            }
 
             // Get the sponsor for the call
             let sponsor = database
@@ -57,7 +84,7 @@ pub async fn start_handler(
             initialize_cached_call(&cache, call.sid.clone(), sponsor).await;
 
             // Start call recording
-            tokio::spawn(start_call_recording(twilio.0, call.sid.clone()));
+            tokio::spawn(start_call_recording(twilio.0, secrets.0, call.sid.clone()));
 
             twiml
         })
@@ -85,10 +112,26 @@ fn generate_start_twiml(greeting: &str) -> Twiml {
 }
 
 /// Generate the TwiML for a banned user.
-fn generate_banned_twiml() -> Twiml {
+fn generate_reject_twiml() -> Twiml {
     let mut twiml = Twiml::new();
 
     twiml.add(&Reject::default());
+
+    twiml
+}
+
+/// Generate the TwiML for a user who has exceeded the daily attempt limit.
+fn generate_out_of_attempts_twiml() -> Twiml {
+    let mut twiml = Twiml::new();
+
+    twiml.add(&Say {
+        txt: CONFIG.texts.out_of_attempts.replace(
+            "$attempts",
+            &CONFIG.settings.daily_attempt_limit.to_string(),
+        ),
+        voice: Voice::Custom(CONFIG.settings.voice.to_owned()),
+        language: CONFIG.settings.language.to_owned(),
+    });
 
     twiml
 }
@@ -127,13 +170,10 @@ async fn initialize_cached_call(
 /// on twilio's backend has not yet updated to `in-progress`. In this case, the
 /// recording will be retried a number of times before giving up. This is a known
 /// limitation of the Twilio API and the recommended approach by twilio evangelists.
-async fn start_call_recording(twilio: TwilioClient, call_sid: String) {
+async fn start_call_recording(twilio: TwilioClient, secrets: Secrets, call_sid: String) {
     for _ in 0..CONFIG.settings.record_retry {
         if let Ok(recording) = twilio
-            .record_call(
-                &call_sid,
-                &format!("{}/recording", CONFIG.settings.global_address),
-            )
+            .record_call(&call_sid, &format!("{}/recording", secrets.global_url))
             .await
         {
             log::debug!("Recording started with id {}", recording.sid);
