@@ -21,6 +21,7 @@ mod database;
 mod game;
 mod review;
 mod secrets;
+mod crypto;
 
 #[tokio::main]
 async fn main() {
