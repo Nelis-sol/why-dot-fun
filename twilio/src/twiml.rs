@@ -3,6 +3,7 @@ mod message;
 mod play;
 mod record;
 mod redirect;
+mod reject;
 mod say;
 mod sms;
 
@@ -11,6 +12,7 @@ pub use self::message::Message;
 pub use self::play::{Digits, Play, Playable};
 pub use self::record::{Record, Transcribe};
 pub use self::redirect::Redirect;
+pub use self::reject::{Reject, RejectReason};
 pub use self::say::{Say, Voice};
 pub use self::sms::Sms;
 

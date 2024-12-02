@@ -24,4 +24,5 @@ schema_description = "Analyzes the previous conversation and determines if the p
 schema_property = "Whether the player won the prize"
 
 [texts]
+banned = "We are sorry, but it seems that you are banned from playing the game. Please contact us for more information."
 name_not_found = "I'm sorry, I didn't catch your name. Please tell me your name to start the game."

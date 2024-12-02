@@ -23,6 +23,12 @@ CREATE TABLE IF NOT EXISTS winners (
 	sponsor_id INT NOT NULL REFERENCES sponsors(id)
 );
 
+CREATE TABLE IF NOT EXISTS users (
+	phone_number TEXT NOT NULL PRIMARY KEY,
+	attempts INT NOT NULL,
+	banned BOOLEAN NOT NULL
+);
+
 INSERT INTO sponsors (
 	name, 
 	active, 

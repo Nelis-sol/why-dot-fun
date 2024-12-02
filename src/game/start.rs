@@ -10,7 +10,7 @@ use axum::{extract::Request, response::IntoResponse, Extension};
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::Mutex;
 use twilio::{
-    twiml::{Method, Redirect, Say, Twiml, Voice},
+    twiml::{Method, Redirect, Reject, Say, Twiml, Voice},
     Call, Client as TwilioClient,
 };
 
@@ -24,6 +24,25 @@ pub async fn start_handler(
         .clone()
         .respond_to_webhook_async(request, |call: Call| async move {
             log::debug!("Received call from {} with id {}", call.from, call.sid);
+
+            // Check if the user is calling from a banned number
+            if database
+                .is_user_banned(&call.from)
+                .await
+                .expect("Failed to check user ban status")
+            {
+                log::debug!("Reject call from banned user {}", call.from);
+                return generate_banned_twiml();
+            }
+
+            // Add one attempt to the user's profile, generating a new
+            // profile if the user does not yet exist in the database.
+            let user = database
+                .add_user_attempt(&call.from)
+                .await
+                .expect("Failed to add attempt");
+
+            log::debug!("User {} has {} attempts", user.phone_number, user.attempts);
 
             // Get the sponsor for the call
             let sponsor = database
@@ -61,6 +80,15 @@ fn generate_start_twiml(greeting: &str) -> Twiml {
         method: Method::Post,
         url: "/redirect-gather/name".to_owned(),
     });
+
+    twiml
+}
+
+/// Generate the TwiML for a banned user.
+fn generate_banned_twiml() -> Twiml {
+    let mut twiml = Twiml::new();
+
+    twiml.add(&Reject::default());
 
     twiml
 }

@@ -23,5 +23,5 @@ sqlx = { version = "0.8", features = ["postgres", "runtime-tokio-native-tls"] }
 tokio = { version = "1.41", features = ["full"] }
 tower-http = { version = "0.6", features = ["fs"] }
 tower_governor = "0.4"
-twilio = { git = "https://github.com/Nelis-sol/new-twilio.git" }
+twilio = { path = "twilio"}
 twitter-v2 = "0.1"

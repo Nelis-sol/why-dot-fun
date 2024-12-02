@@ -102,6 +102,40 @@ impl Database {
         .fetch_optional(&self.pool)
         .await?)
     }
+
+    /// Adds one attempt to the user with the given phone number. If the user was not yet in the
+    /// database, a new user is created with one attempt. Returns the updated or generated user.
+    pub async fn add_user_attempt(&self, phone_number: &str) -> Result<User> {
+        Ok(sqlx::query_as!(
+            User,
+            r#"
+                INSERT INTO users (phone_number, attempts, banned)
+                VALUES ($1, 1, false)
+                ON CONFLICT (phone_number) DO UPDATE
+                SET attempts = users.attempts + 1
+                RETURNING *
+            "#,
+            phone_number
+        )
+        .fetch_one(&self.pool)
+        .await?)
+    }
+
+    /// Checks if the user with the given phone number is banned. If the user was not yet in the
+    /// database, the user is considered not banned.
+    pub async fn is_user_banned(&self, phone_number: &str) -> Result<bool> {
+        Ok(sqlx::query!(
+            r#"
+                SELECT banned FROM users
+                WHERE phone_number = $1
+            "#,
+            phone_number
+        )
+        .fetch_optional(&self.pool)
+        .await?
+        .map(|row| row.banned)
+        .unwrap_or(false))
+    }
 }
 
 #[allow(unused)]
@@ -137,4 +171,12 @@ pub struct Winner {
     pub key: String,
     pub name: String,
     pub sponsor_id: i32,
+}
+
+#[allow(unused)]
+#[derive(Debug, Clone)]
+pub struct User {
+    pub phone_number: String,
+    pub attempts: i32,
+    pub banned: bool,
 }
