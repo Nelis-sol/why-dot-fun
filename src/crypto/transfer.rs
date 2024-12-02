@@ -11,7 +11,7 @@ use spl_associated_token_account::get_associated_token_address;
 
 
 pub fn transfer_solana_token(
-    sender_keypair: String, 
+    sender_private_key: String, 
     receiver_pubkey: String, 
     token_mint: String, 
     amount: u64
@@ -24,7 +24,7 @@ pub fn transfer_solana_token(
     let client = RpcClient::new_with_commitment(rpc_url.to_string(), commitment_config);
 
     // Initialize accounts needed for the transfer
-    let sender_keypair: Keypair = Keypair::from_base58_string(&sender_keypair);
+    let sender_keypair: Keypair = Keypair::from_base58_string(&sender_private_key);
     let receiver_pubkey: Pubkey = Pubkey::from_str(&receiver_pubkey).expect("Invalid receiver address");
     let token_mint: Pubkey = Pubkey::from_str(&token_mint).expect("Invalid token mint address");
 
