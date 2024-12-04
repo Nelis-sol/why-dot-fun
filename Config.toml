@@ -7,6 +7,7 @@ timeout = 30
 record_retry = 5
 daily_attempt_limit=3
 daily_response_limit=5
+recording_timeout = 30
 
 [name]
 max_tokens = 512
@@ -20,8 +21,11 @@ model = "gpt-3.5-turbo"
 [end]
 max_tokens = 512
 model = "gpt-4o-mini"
-schema_description = "Analyzes the previous conversation and determines if the player won the prize"
-schema_property = "Whether the player won the prize"
+schema_description = "Call analyzing"
+won_schema_property = "Whether the player won the prize"
+rating_schema_property = "Rate the conversation from 0 to 10 on how well it could be published"
+explanation_schema_property = "Explain why you rated the conversation as you did"
+rating_threshold = 7
 
 [texts]
 out_of_attempts = "You have reached the maximum number of $attempts attempts for today. Please try again tomorrow."

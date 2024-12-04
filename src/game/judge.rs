@@ -1,4 +1,6 @@
-use crate::{cache::CachedCall, database::Database, secrets::Secrets, CONFIG};
+use crate::{
+    cache::CachedCall, database::Database, game::recording::render_video, secrets::Secrets, CONFIG,
+};
 use anyhow::{Context, Result};
 use async_openai::{
     config::OpenAIConfig,
@@ -6,6 +8,7 @@ use async_openai::{
     Client as OpenAIClient,
 };
 use axum::{extract::Request, response::IntoResponse, Extension};
+use reqwest::Client as ReqwestClient;
 use serde::Deserialize;
 use serde_json::json;
 use std::{collections::HashMap, sync::Arc};
@@ -14,6 +17,7 @@ use twilio::{twiml::Twiml, Call, Client as TwilioClient, OutboundMessage};
 
 pub async fn judge_handler(
     twilio: Extension<TwilioClient>,
+    reqwest: Extension<ReqwestClient>,
     openai: Extension<OpenAIClient<OpenAIConfig>>,
     cache: Extension<Arc<Mutex<HashMap<String, CachedCall>>>>,
     database: Extension<Database>,
@@ -25,8 +29,8 @@ pub async fn judge_handler(
         .respond_to_webhook_async(request, |call: Call| async move {
             let cached_call = {
                 let mut cache = cache.lock().await;
-                let cached_call = cache
-                    .get_mut(&call.sid)
+                let mut cached_call = cache
+                    .remove(&call.sid)
                     .expect("Failed to get message conversation");
 
                 cached_call.end_last_message();
@@ -36,10 +40,12 @@ pub async fn judge_handler(
             cached_call.write_subtitles_to_file(&call.sid);
             tokio::spawn(judge_conversation(
                 twilio.0,
+                reqwest.0,
                 call.from,
                 openai.0,
                 database.0,
                 secrets.0,
+                call.sid,
                 cached_call,
             ));
 
@@ -51,14 +57,18 @@ pub async fn judge_handler(
 #[derive(Debug, Deserialize)]
 pub struct JudgeResponse {
     pub won_prize: bool,
+    pub rating: u8,
+    pub explanation: String,
 }
 
 async fn judge_conversation(
     twilio: TwilioClient,
+    reqwest: ReqwestClient,
     caller_phone_number: String,
     openai: OpenAIClient<OpenAIConfig>,
     database: Database,
     secrets: Secrets,
+    call_sid: String,
     cached_call: CachedCall,
 ) {
     let schema = json!({
@@ -66,17 +76,25 @@ async fn judge_conversation(
         "properties": {
             "won_prize": {
                 "type": "boolean",
-                "description": CONFIG.end.schema_property
+                "description": CONFIG.end.won_schema_property
+            },
+            "rating": {
+                "type": "integer",
+                "description": CONFIG.end.rating_schema_property
+            },
+            "explanation": {
+                "type": "string",
+                "description": CONFIG.end.explanation_schema_property
             }
         },
-        "required": ["won_prize"],
+        "required": ["won_prize", "rating", "explanation"],
         "additionalProperties": false,
     });
 
     let response_format = ResponseFormat::JsonSchema {
         json_schema: ResponseFormatJsonSchema {
             description: Some(CONFIG.end.schema_description.to_owned()),
-            name: "won_prize_extraction".to_owned(),
+            name: "call_analyzing".to_owned(),
             schema: Some(schema),
             strict: Some(true),
         },
@@ -95,10 +113,12 @@ async fn judge_conversation(
         .create(request)
         .await
         .expect("Failed to create chat completion");
+
     let choice = response
         .choices
         .first()
         .expect("Failed to get first choice");
+
     let content = choice
         .message
         .content
@@ -107,6 +127,17 @@ async fn judge_conversation(
 
     let judged: JudgeResponse =
         serde_json::from_str(&content).expect("Failed to judge conversation");
+
+    log::debug!(
+        "Judged conversation a {}/10 with explanation: {}",
+        judged.rating,
+        judged.explanation
+    );
+
+    if judged.rating >= CONFIG.end.rating_threshold as u8 {
+        log::debug!("Rating above threshold, rendering video");
+        tokio::spawn(render_video(reqwest, call_sid, cached_call.clone()));
+    }
 
     let result = match judged.won_prize {
         true => won_handler(twilio, database, secrets, caller_phone_number, cached_call).await,
