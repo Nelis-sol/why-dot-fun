@@ -1,6 +1,4 @@
-use crate::{
-    cache::CachedCall, database::Database, game::recording::render_video, secrets::Secrets, CONFIG,
-};
+use crate::{cache::CachedCall, database::Database, secrets::Secrets, video::render_video, CONFIG};
 use anyhow::{Context, Result};
 use async_openai::{
     config::OpenAIConfig,
@@ -37,7 +35,6 @@ pub async fn judge_handler(
                 cached_call.clone()
             };
 
-            cached_call.write_subtitles_to_file(&call.sid);
             tokio::spawn(judge_conversation(
                 twilio.0,
                 reqwest.0,
@@ -134,10 +131,13 @@ async fn judge_conversation(
         judged.explanation
     );
 
-    if judged.rating >= CONFIG.end.rating_threshold as u8 {
-        log::debug!("Rating above threshold, rendering video");
-        tokio::spawn(render_video(reqwest, call_sid, cached_call.clone()));
-    }
+    tokio::spawn(render_video(
+        reqwest,
+        secrets.clone(),
+        call_sid,
+        cached_call.clone(),
+        judged.rating,
+    ));
 
     let result = match judged.won_prize {
         true => won_handler(twilio, database, secrets, caller_phone_number, cached_call).await,

@@ -1,8 +1,13 @@
 use async_openai::Client as OpenaiClient;
-use axum::{routing::{get, post}, Extension, Router};
+use axum::response::IntoResponse;
+use axum::{
+    routing::{get, post},
+    Extension, Router,
+};
 use cache::CachedCall;
 use database::Database;
 use reqwest::Client as ReqwestClient;
+use reqwest::StatusCode;
 use secrets::Secrets;
 use static_toml::static_toml;
 use std::{collections::HashMap, sync::Arc};
@@ -10,18 +15,17 @@ use tokio::{net::TcpListener, sync::Mutex};
 use tower_http::services::ServeDir;
 use twilio::Client as TwilioClient;
 use twitter_v2::{authorization::Oauth1aToken, TwitterApi};
-use axum::response::IntoResponse;
-use reqwest::StatusCode;
 
 static_toml! { static CONFIG = include_toml!("Config.toml"); }
 
 mod cache;
 mod claim;
+mod crypto;
 mod database;
 mod game;
 mod review;
 mod secrets;
-mod crypto;
+mod video;
 
 #[tokio::main]
 async fn main() {

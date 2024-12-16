@@ -166,6 +166,7 @@ pub struct Sponsor {
     pub end_text: String,
     pub won_text: String,
     pub lost_text: String,
+    pub rating_threshold: i32,
 }
 
 #[allow(unused)]

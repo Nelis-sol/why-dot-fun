@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS sponsors (
 	start_text TEXT NOT NULL,
 	end_text TEXT NOT NULL,
 	won_text TEXT NOT NULL,
-	lost_text TEXT NOT NULL
+	lost_text TEXT NOT NULL,
+	rating_threshold INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS winners (
@@ -46,12 +47,13 @@ INSERT INTO sponsors (
 	start_text, 
 	end_text,
 	won_text,
-	lost_text
+	lost_text,
+	rating_threshold
 )
 VALUES (
 	'Airbnb', 
 	true, 
-	'https://images.surferseo.art/82b37c69-0150-4d5e-b5b4-4a2a87b31a21.jpeg',
+	'https://videos.pexels.com/video-files/20257855/20257855-hd_1280_720_60fps.mp4',
 	'Private key', 
 	'Token mint', 
 	1000, 
@@ -63,5 +65,6 @@ VALUES (
 	'Thank you {name}. Let''s start the game. You will have {duration} seconds to convince us to give you a free stay at any of our apartments! Go!', 
 	'Your time is up! Thank you for participating. We will now decide who gets the free apartment and send you a message. Goodbye!',
 	'Congratulations {name}! You won the free stay at any of our apartments! Visit {link} to claim your prize.',
-	'Hey {name}, unfortunately, you lost the game. Better luck next time!'
+	'Hey {name}, unfortunately, you lost the game. Better luck next time!',
+	10
 );

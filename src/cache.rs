@@ -3,7 +3,6 @@ use async_openai::types::{
     ChatCompletionRequestAssistantMessageContent, ChatCompletionRequestMessage,
     ChatCompletionRequestUserMessageContent,
 };
-use srtlib::{Subtitle, Subtitles, Timestamp};
 use std::time::Instant;
 
 #[derive(Debug, Clone)]
@@ -13,6 +12,11 @@ pub struct CachedCall {
     pub start: Instant,
     pub messages: Vec<ChatCompletionRequestMessage>,
     pub timestamps: Vec<Timespan>,
+}
+
+pub struct CachedMessage {
+    pub message: String,
+    pub timespan: Timespan,
 }
 
 #[derive(Debug, Clone)]
@@ -65,27 +69,18 @@ impl CachedCall {
         }
     }
 
-    /// Collect all user and assistant messages together in a SRT file,
-    /// which can be used to display subtitles with correct and accurate
-    /// timestamps under the video recording of the call.
-    pub fn write_subtitles_to_file(&self, call_id: &str) {
-        let _ = std::fs::create_dir_all(format!("cache/recordings/{call_id}"));
-        let mut subtitles = Subtitles::new();
-        for (index, (message, timespan)) in
-            self.messages.iter().zip(self.timestamps.iter()).enumerate()
-        {
-            let start =
-                Timestamp::from_milliseconds((timespan.start - self.start).as_millis() as _);
-            let end = Timestamp::from_milliseconds((timespan.end - self.start).as_millis() as _);
-            if let Some(content) = Self::extract_message_content(message) {
-                subtitles.push(Subtitle::new(index, start, end, content));
-            }
-        }
-
-        let path = format!("cache/recordings/{call_id}/subtitles.srt");
-        if let Err(e) = subtitles.write_to_file(&path, None) {
-            log::error!("Failed to write subtitles to file: {e:?}");
-        }
+    /// Collects all cached messages and their respective timestamps
+    pub fn get_cached_messages(&self) -> Vec<CachedMessage> {
+        self.messages
+            .iter()
+            .zip(self.timestamps.iter())
+            .filter_map(|(message, timespan)| {
+                Self::extract_message_content(message).map(|content| CachedMessage {
+                    message: content,
+                    timespan: timespan.clone(),
+                })
+            })
+            .collect()
     }
 
     /// Extracts the content of a message from the openai chat completion if the

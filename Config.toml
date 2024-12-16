@@ -25,7 +25,6 @@ schema_description = "Call analyzing"
 won_schema_property = "Whether the player won the prize"
 rating_schema_property = "Rate the conversation from 0 to 10 on how well it could be published"
 explanation_schema_property = "Explain why you rated the conversation as you did"
-rating_threshold = 7
 
 [texts]
 out_of_attempts = "You have reached the maximum number of $attempts attempts for today. Please try again tomorrow."
