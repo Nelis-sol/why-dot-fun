@@ -53,7 +53,7 @@ INSERT INTO sponsors (
 VALUES (
 	'Airbnb', 
 	true, 
-	'https://videos.pexels.com/video-files/20257855/20257855-hd_1280_720_60fps.mp4',
+	'https://images.surferseo.art/82b37c69-0150-4d5e-b5b4-4a2a87b31a21.jpeg',
 	'Private key', 
 	'Token mint', 
 	1000, 

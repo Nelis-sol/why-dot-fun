@@ -47,6 +47,8 @@ pub async fn download_background_video(
     let extension = match content_type.as_str() {
         "video/mp4" => "mp4",
         "video/quicktime" => "mov",
+        "image/jpeg" => "jpg",
+        "image/png" => "png",
         _ => panic!("Unsupported content type: {content_type}"),
     };
 
