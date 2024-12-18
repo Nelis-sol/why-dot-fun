@@ -8,7 +8,7 @@ anyhow = "1.0"
 askama = { version = "0.12", features = ["with-axum"] }
 askama_axum = "0.4"
 async-openai = "0.26"
-axum = "0.7"
+axum = { version = "0.7", features = ["macros"] }
 axum-extra = { version = "0.9", features = ["cookie"] }
 chrono = "0.4"
 dotenv = "0.15"
