@@ -227,6 +227,22 @@ impl Database {
     }
 
 
+    pub async fn update_attempt_video(&self, caller_phone_number: String, video_url: String) -> Result<()> {
+        sqlx::query!(
+            r#"
+                UPDATE attempts
+                SET video_url = $1
+                WHERE phone_number = $2
+            "#,
+            video_url,
+            caller_phone_number
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
     pub async fn update_attempt_winner(&self, caller_phone_number: String, is_winner: bool) -> Result<()> {
         sqlx::query!(
             r#"
@@ -242,6 +258,7 @@ impl Database {
 
         Ok(())
     }
+
 
 
 }

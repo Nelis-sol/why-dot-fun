@@ -37,8 +37,8 @@ CREATE TABLE IF NOT EXISTS attempts (
 	phone_number TEXT NOT NULL,
 	created_at TIMESTAMP WITH TIME ZONE NOT NULL,
 	updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
-	video_url TEXT,
-	twitter_url TEXT,
+	video_url TEXT, -- TODO: add video_url
+	twitter_url TEXT, -- TODO: add twitter_url
 	is_winner BOOLEAN,
 	sponsor_question TEXT,
 	sponsor_name TEXT,
@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS attempts (
 	sponsor_attempt_reward INT,
 	sponsor_background_url TEXT,
 	sponsor_challenge_time INT,
-	challenge_transcript TEXT,
-	challenge_status TEXT
+	challenge_transcript TEXT, -- TODO: add challenge_transcript
+	challenge_status TEXT -- TODO: add challenge_status
 );
 
 

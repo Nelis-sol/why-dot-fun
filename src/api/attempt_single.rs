@@ -13,6 +13,7 @@ pub async fn attempt_single(
 
     let attempt = Attempt {
         id,
+        phone_number: "1234567890".to_string(),
         created_at: 1734529222,
         updated_at: 1734579250,
         video_url: "https://osco.digital/why-fun-crab-video.mp4".to_string(),

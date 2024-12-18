@@ -7,6 +7,8 @@ use serde::{Serialize, Deserialize};
 pub struct Attempt {
     // id of the attempt
     pub id: String,
+    // phone number of the user
+    pub phone_number: String,
     // attempt created at
     pub created_at: u64,
     // attempt updated at
@@ -30,7 +32,7 @@ pub struct Attempt {
     // background url of the sponsor image or video
     pub sponsor_background_url: String,
     // time user has to complete the challenge
-    pub sponsor_challenge_time: u16,
+    pub sponsor_challenge_time: u64,
     // transcript of the challenge
     pub challenge_transcript: String,
     // status of the challenge

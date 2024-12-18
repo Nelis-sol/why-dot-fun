@@ -18,6 +18,7 @@ pub async fn attempt_list() -> impl IntoResponse {
 
     let attempt1 = Attempt {
         id: "EG3VTogv4sKch4NtgVMCUr3NXwLsauzKXtQ2ffhEiC3h".to_string(),
+        phone_number: "1234567890".to_string(),
         created_at: 1734529222,
         updated_at: 1734579250,
         video_url: "https://osco.digital/why-fun-crab-video.mp4".to_string(),
@@ -36,6 +37,7 @@ pub async fn attempt_list() -> impl IntoResponse {
 
     let attempt2 = Attempt {
         id: "6rwY2CMnzSbfonKzUiDE9EkeZbMF8hT6vMQ5uCrKNmuj2".to_string(),
+        phone_number: "1234567890".to_string(),
         created_at: 1734529222,
         updated_at: 1734579250,
         video_url: "https://osco.digital/why-fun-crab-video.mp4".to_string(),
