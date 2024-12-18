@@ -4,6 +4,7 @@ use axum::{
     routing::{get, post},
     Extension, Router,
 };
+use axum::extract::Path;
 use cache::CachedCall;
 use database::Database;
 use reqwest::Client as ReqwestClient;
@@ -86,6 +87,9 @@ async fn main() {
         .route("/end", post(game::end::end_handler))
         .route("/judge", post(game::judge::judge_handler))
         .route("/recording", post(game::recording::recording_handler))
+        // .route("/api/attempts/:id", get(attempts_by_id))
+        // .route("/api/attempts", get(attempts_all))
+        // .route("/api/launchpad/create", post(launchpad_create))
         .route(
             "/redirect-gather/*path",
             post(game::gather::redirect_gather_handler),
@@ -111,3 +115,17 @@ async fn main() {
 pub async fn health_check() -> impl IntoResponse {
     StatusCode::OK
 }
+
+// pub async fn attempts_all() -> impl IntoResponse {
+//     StatusCode::OK
+// }
+
+// pub async fn attempts_by_id(Path(id): Path<String>) -> impl IntoResponse {
+//     StatusCode::OK
+// }
+
+// pub async fn launchpad_create(
+//     Json(payload): Json<LaunchpadCreatePayload>
+// ) -> impl IntoResponse {
+//     StatusCode::OK
+// }

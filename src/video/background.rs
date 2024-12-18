@@ -153,7 +153,7 @@ async fn generate_ai_image(
         },
         "request": {
             "prompt": message,
-            "model_name": "sdxlUnstableDiffusers_v8HEAVENSWRATH_133813.safetensors",
+            "model_name": "sd_xl_base_1.0.safetensors",
             "negative_prompt": "nsfw",
             "width": 1024,
             "height": 1024,
@@ -165,7 +165,7 @@ async fn generate_ai_image(
             "guidance_scale": 7.5
         }
     });
-    
+
     let response = reqwest
         .post("https://api.novita.ai/v3/async/txt2img")
         .bearer_auth(&secrets.novita_api_key)
