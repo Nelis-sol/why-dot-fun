@@ -1,4 +1,4 @@
-use axum::response::IntoResponse;
+use axum::response::{IntoResponse, Response};
 use axum::Json;
 use axum::Extension;
 use crate::database::Sponsor;
@@ -6,10 +6,28 @@ use crate::api::SponsorArgs;
 use crate::Database;
 use anyhow::Context;
 use crate::StatusCode;
+use serde::Serialize;
 
+#[derive(Serialize)]
+pub struct ReturnSponsor {
+    id: i32,
+    name: String,
+    active: bool,
+    background_url: String,
+    token_mint: String,
+    original_tokens: i32,
+    available_tokens: i32,
+    reward_tokens: i32,
+    challenge_time: i32,
+    start_text: String,
+    system_instruction: String,
+    won_text: String,
+    lost_text: String,
+    rating_threshold: i32,
+}
 
 pub async fn launchpad(
-    database: Extension<Database>,
+    Extension(database): Extension<Database>,
     Json(new_sponsor): Json<SponsorArgs>,
 ) -> impl IntoResponse {
     let challenge: String = String::from("Thank you {name}! Lets start the game. You have {duration} seconds to answer the following question: ");
@@ -34,11 +52,29 @@ pub async fn launchpad(
         rating_threshold: new_sponsor.rating_threshold,
     };
 
-    database
+    let sponsor_entry = database
         .create_sponsor(sponsor)
         .await
         .context("Creating sponsor")
         .expect("Failed to create sponsor");
 
-    StatusCode::OK
+    let return_sponsor = ReturnSponsor {
+        id: sponsor_entry.id,
+        name: sponsor_entry.name,
+        active: sponsor_entry.active,
+        background_url: sponsor_entry.background_url,
+        token_mint: sponsor_entry.token_mint,
+        original_tokens: sponsor_entry.original_tokens,
+        available_tokens: sponsor_entry.available_tokens,
+        reward_tokens: sponsor_entry.reward_tokens,
+        challenge_time: sponsor_entry.challenge_time,
+        system_instruction: sponsor_entry.system_instruction,
+        start_text: sponsor_entry.start_text,
+        won_text: sponsor_entry.won_text,
+        lost_text: sponsor_entry.lost_text,
+        rating_threshold: sponsor_entry.rating_threshold,
+    };
+
+    let response = (StatusCode::CREATED, Json(return_sponsor)).into_response();
+    response
 }
