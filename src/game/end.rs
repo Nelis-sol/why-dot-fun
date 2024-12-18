@@ -8,6 +8,7 @@ use twilio::{
     Call, Client,
 };
 
+
 pub async fn end_handler(
     twilio: Extension<Client>,
     cache: Extension<Arc<Mutex<HashMap<String, CachedCall>>>>,
@@ -42,6 +43,8 @@ pub async fn end_handler(
                 voice: Voice::Custom(CONFIG.settings.voice.to_owned()),
                 language: CONFIG.settings.language.to_owned(),
             });
+
+
 
             twiml.add(&Redirect {
                 url: "/judge".to_owned(),

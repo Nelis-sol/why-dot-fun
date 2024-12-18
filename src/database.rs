@@ -3,6 +3,7 @@ use anyhow::Result;
 use chrono::{DateTime, Utc};
 use sqlx::{postgres::PgPoolOptions, PgPool};
 use serde::{Serialize, Deserialize};
+use crate::api::Attempt;
 
 #[derive(Debug, Clone)]
 pub struct Database {
@@ -141,9 +142,7 @@ impl Database {
         Ok(())
     }
 
-
-     /// Creates a new winner in the database with the given name and sponsor ID.
-    /// Uses a random UUID as the private key that the user can use to claim their reward.
+     /// Creates a new sponsor in the database.
     pub async fn create_sponsor(&self, sponsor: Sponsor) -> Result<Sponsor> {
         Ok(sqlx::query_as!(
             Sponsor,
@@ -191,6 +190,59 @@ impl Database {
         .fetch_one(&self.pool)
         .await?)
     }
+
+
+    /// Creates a new attempt in the database.
+    pub async fn create_attempt_with_sponsor(&self, user: &User, sponsor: &Sponsor) -> Result<Attempt> {
+        Ok(sqlx::query_as!(
+            Attempt,
+            r#"
+                INSERT INTO attempts (
+                phone_number,
+                sponsor_question,
+                sponsor_name,
+                sponsor_token_mint,
+                sponsor_total_reward,
+                sponsor_attempt_reward,
+                sponsor_background_url,
+                sponsor_challenge_time,
+            )
+                VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8
+                )
+                RETURNING *
+            "#,
+            user.phone_number,
+            sponsor.sponsor_question,
+            sponsor.sponsor_name,
+            sponsor.sponsor_token_mint,
+            sponsor.sponsor_total_reward,
+            sponsor.sponsor_attempt_reward,
+            sponsor.sponsor_background_url,
+            sponsor.sponsor_challenge_time,
+        )
+        .fetch_one(&self.pool)
+        .await?)
+    }
+
+
+    pub async fn update_attempt_winner(&self, caller_phone_number: String, is_winner: bool) -> Result<()> {
+        sqlx::query!(
+            r#"
+                UPDATE attempts
+                SET is_winner = $1
+                WHERE phone_number = $2
+            "#,
+            is_winner,
+            user.phone_number
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
+
 }
 
 #[allow(unused)]

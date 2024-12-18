@@ -175,6 +175,12 @@ async fn won_handler(
         .await
         .context("Creating winner")?;
 
+        
+    let _attempt = database
+        .update_attempt_winner(caller_phone_number.clone(), true)
+        .await
+        .context("Updating attempt with is_winner true")?;
+
     // Generate the winning link
     let link = format!("{}/claim?key={}", secrets.global_url, winner.key);
 
@@ -199,12 +205,17 @@ async fn won_handler(
 
 async fn lost_handler(
     twilio: TwilioClient,
-    _database: Database,
+    database: Database,
     secrets: Secrets,
     caller_phone_number: String,
     cached_call: CachedCall,
 ) -> Result<()> {
     log::debug!("Lost prize for sponsor: {}", cached_call.sponsor.name);
+
+    let _attempt = database
+        .update_attempt_winner(caller_phone_number.clone(), false)
+        .await
+        .context("Updating attempt with is_winner false")?;
 
     // Generate the loosing text
     let text = cached_call

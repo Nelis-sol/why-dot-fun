@@ -77,6 +77,14 @@ pub async fn start_handler(
                 .await
                 .expect("Failed to get sponsor");
 
+
+            // Create the attempt in the database
+            database
+                .create_attempt_with_sponsor(&user, &sponsor)
+                .await
+                .expect("Failed to create attempt");
+
+
             // Generate the twiml response
             let twiml = generate_start_twiml(&sponsor.greeting_text);
 

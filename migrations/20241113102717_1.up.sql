@@ -32,6 +32,26 @@ CREATE TABLE IF NOT EXISTS users (
 	banned BOOLEAN NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS attempts (
+	id SERIAL PRIMARY KEY,
+	phone_number TEXT NOT NULL PRIMARY KEY,
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+	updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+	video_url TEXT,
+	twitter_url TEXT,
+	is_winner BOOLEAN,
+	sponsor_question TEXT,
+	sponsor_name TEXT,
+	sponsor_token_mint TEXT,
+	sponsor_total_reward INT,
+	sponsor_attempt_reward INT,
+	sponsor_background_url TEXT,
+	sponsor_challenge_time INT,
+	challenge_transcript TEXT,
+	challenge_status TEXT
+);
+
+
 INSERT INTO sponsors (
 	name, 
 	active, 
@@ -68,3 +88,5 @@ VALUES (
 	'Hey {name}, unfortunately, you lost the game. Better luck next time!',
 	10
 );
+
+
