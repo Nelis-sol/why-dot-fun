@@ -27,6 +27,7 @@ mod game;
 mod review;
 mod secrets;
 mod video;
+mod api;
 
 #[tokio::main]
 async fn main() {
@@ -87,9 +88,9 @@ async fn main() {
         .route("/end", post(game::end::end_handler))
         .route("/judge", post(game::judge::judge_handler))
         .route("/recording", post(game::recording::recording_handler))
-        // .route("/api/attempts/:id", get(attempts_by_id))
-        // .route("/api/attempts", get(attempts_all))
-        // .route("/api/launchpad/create", post(launchpad_create))
+        .route("/api/attempts/:id", get(api::attempt_single::attempt_single))
+        .route("/api/attempts", get(api::attempt_list::attempt_list))
+        .route("/api/launchpad", post(api::launchpad::launchpad))
         .route(
             "/redirect-gather/*path",
             post(game::gather::redirect_gather_handler),
