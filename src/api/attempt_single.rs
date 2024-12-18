@@ -1,7 +1,6 @@
 use axum::response::IntoResponse;
 use axum::extract::Path;
 use axum::Json;
-use reqwest::StatusCode;
 
 use crate::api::Attempt;
 

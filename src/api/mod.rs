@@ -10,9 +10,9 @@ pub struct Attempt {
     // phone number of the user
     pub phone_number: String,
     // attempt created at
-    pub created_at: u64,
+    pub created_at: i32,
     // attempt updated at
-    pub updated_at: u64,
+    pub updated_at: i32,
     // video url of attempt
     pub video_url: String,
     // twitter url of attempt
@@ -26,13 +26,13 @@ pub struct Attempt {
     // sponsored token mint
     pub sponsor_token_mint: String,
     // sponsored total reward
-    pub sponsor_total_reward: u64,
+    pub sponsor_total_reward: i32,
     // sponsored reward per attempt
-    pub sponsor_attempt_reward: u64,
+    pub sponsor_attempt_reward: i32,
     // background url of the sponsor image or video
     pub sponsor_background_url: String,
     // time user has to complete the challenge
-    pub sponsor_challenge_time: u64,
+    pub sponsor_challenge_time: i32,
     // transcript of the challenge
     pub challenge_transcript: String,
     // status of the challenge

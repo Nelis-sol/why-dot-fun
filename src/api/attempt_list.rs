@@ -1,5 +1,4 @@
 use axum::response::IntoResponse;
-use reqwest::StatusCode;
 use axum::Json;
 use serde::{Serialize, Deserialize};
 use crate::api::Attempt;

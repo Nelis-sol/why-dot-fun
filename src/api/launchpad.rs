@@ -1,4 +1,4 @@
-use axum::response::{IntoResponse, Response};
+use axum::response::IntoResponse;
 use axum::Json;
 use axum::Extension;
 use crate::database::Sponsor;
