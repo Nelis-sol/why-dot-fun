@@ -10,33 +10,33 @@ pub struct Attempt {
     // phone number of the user
     pub phone_number: String,
     // attempt created at
-    pub created_at: i32,
+    pub created_at: Option<i32>,
     // attempt updated at
-    pub updated_at: i32,
+    pub updated_at: Option<i32>,
     // video url of attempt
-    pub video_url: String,
+    pub video_url: Option<String>,
     // twitter url of attempt
-    pub twitter_url: String,
+    pub twitter_url: Option<String>,
     // is the attempt a winner
-    pub is_winner: bool,
+    pub is_winner: Option<bool>,
     // sponsored question / challenge
-    pub sponsor_question: String,
+    pub sponsor_question: Option<String>,
     // name of the sponsor
-    pub sponsor_name: String,
+    pub sponsor_name: Option<String>,
     // sponsored token mint
-    pub sponsor_token_mint: String,
+    pub sponsor_token_mint: Option<String>,
     // sponsored total reward
-    pub sponsor_total_reward: i32,
+    pub sponsor_total_reward: Option<i32>,
     // sponsored reward per attempt
-    pub sponsor_attempt_reward: i32,
+    pub sponsor_attempt_reward: Option<i32>,
     // background url of the sponsor image or video
-    pub sponsor_background_url: String,
+    pub sponsor_background_url: Option<String>,
     // time user has to complete the challenge
-    pub sponsor_challenge_time: i32,
+    pub sponsor_challenge_time: Option<i32>,
     // transcript of the challenge
-    pub challenge_transcript: String,
+    pub challenge_transcript: Option<String>,
     // status of the challenge
-    pub challenge_status: String,
+    pub challenge_status: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
