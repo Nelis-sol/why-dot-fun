@@ -2,6 +2,7 @@ use crate::secrets::Secrets;
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use sqlx::{postgres::PgPoolOptions, PgPool};
+use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Clone)]
 pub struct Database {
@@ -139,6 +140,57 @@ impl Database {
 
         Ok(())
     }
+
+
+     /// Creates a new winner in the database with the given name and sponsor ID.
+    /// Uses a random UUID as the private key that the user can use to claim their reward.
+    pub async fn create_sponsor(&self, sponsor: Sponsor) -> Result<Sponsor> {
+        Ok(sqlx::query_as!(
+            Sponsor,
+            r#"
+                INSERT INTO sponsors (
+                name, 
+                active, 
+                background_url, 
+                private_key,
+                token_mint, 
+                original_tokens, 
+                available_tokens, 
+                reward_tokens, 
+                challenge_time,
+                system_instruction,
+                greeting_text, 
+                start_text, 
+                end_text,
+                won_text,
+                lost_text,
+                rating_threshold
+            )
+                VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
+                )
+                RETURNING *
+            "#,
+            sponsor.name,
+            sponsor.active,
+            sponsor.background_url,
+            sponsor.private_key,
+            sponsor.token_mint,
+            sponsor.original_tokens,
+            sponsor.available_tokens,
+            sponsor.reward_tokens,
+            sponsor.challenge_time,
+            sponsor.system_instruction,
+            sponsor.greeting_text,
+            sponsor.start_text,
+            sponsor.end_text,
+            sponsor.won_text,
+            sponsor.lost_text,
+            sponsor.rating_threshold
+        )
+        .fetch_one(&self.pool)
+        .await?)
+    }
 }
 
 #[allow(unused)]
@@ -148,7 +200,7 @@ pub struct WithdrawnTokens {
 }
 
 #[allow(unused)]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Sponsor {
     pub id: i32,
     pub name: String,

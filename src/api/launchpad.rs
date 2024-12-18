@@ -1,45 +1,16 @@
 use axum::response::IntoResponse;
 use axum::Json;
-use serde::{Serialize, Deserialize};
+use axum::Extension;
+use crate::database::Sponsor;
+use crate::api::SponsorArgs;
+use crate::Database;
+use anyhow::Context;
+use crate::StatusCode;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LaunchpadArgs {
-    pub name: String,
-    pub background_url: String,
-    pub token_mint: String,
-    pub original_tokens: i32,
-    pub available_tokens: i32,
-    pub reward_tokens: i32,
-    pub challenge_time: i32,
-    pub system_instruction: String,
-    pub greeting_text: String,
-    pub start_text: String,
-    pub rating_threshold: i32,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Sponsor {
-    pub id: i32,
-    pub name: String,
-    pub active: bool,
-    pub background_url: String,
-    pub private_key: String,
-    pub token_mint: String,
-    pub original_tokens: i32,
-    pub available_tokens: i32,
-    pub reward_tokens: i32,
-    pub challenge_time: i32,
-    pub system_instruction: String,
-    pub greeting_text: String,
-    pub start_text: String,
-    pub end_text: String,
-    pub won_text: String,
-    pub lost_text: String,
-    pub rating_threshold: i32,
-}
 
 pub async fn launchpad(
-    Json(new_sponsor): Json<LaunchpadArgs>,
+    database: Extension<Database>,
+    Json(new_sponsor): Json<SponsorArgs>,
 ) -> impl IntoResponse {
     let challenge: String = String::from("Thank you {name}! Lets start the game. You have {duration} seconds to answer the following question: ");
 
@@ -63,5 +34,11 @@ pub async fn launchpad(
         rating_threshold: new_sponsor.rating_threshold,
     };
 
-    Json(sponsor).into_response()
+    database
+        .create_sponsor(sponsor)
+        .await
+        .context("Creating sponsor")
+        .expect("Failed to create sponsor");
+
+    StatusCode::OK
 }

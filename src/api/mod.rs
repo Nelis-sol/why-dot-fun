@@ -36,3 +36,18 @@ pub struct Attempt {
     // status of the challenge
     pub challenge_status: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SponsorArgs {
+    pub name: String,
+    pub background_url: String,
+    pub token_mint: String,
+    pub original_tokens: i32,
+    pub available_tokens: i32,
+    pub reward_tokens: i32,
+    pub challenge_time: i32,
+    pub system_instruction: String,
+    pub greeting_text: String,
+    pub start_text: String,
+    pub rating_threshold: i32,
+}
