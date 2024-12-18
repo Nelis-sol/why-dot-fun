@@ -1,7 +1,7 @@
 use axum::response::IntoResponse;
 use axum::extract::Path;
 use axum::Json;
-
+use chrono::Utc;
 use crate::api::Attempt;
 
 
@@ -13,8 +13,8 @@ pub async fn attempt_single(
     let attempt = Attempt {
         id,
         phone_number: "1234567890".to_string(),
-        created_at: Some(1734529222),
-        updated_at: Some(1734579250),
+        created_at: Utc::now(),
+        updated_at: Utc::now(),
         video_url: Some("https://osco.digital/why-fun-crab-video.mp4".to_string()),
         twitter_url: Some("https://x.com/theCRABsite/status/1869299110026899949".to_string()),
         is_winner: Some(false),

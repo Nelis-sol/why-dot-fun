@@ -1,6 +1,7 @@
 pub mod attempt_list;
 pub mod attempt_single;
 pub mod launchpad;
+use chrono::Utc;
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -10,9 +11,9 @@ pub struct Attempt {
     // phone number of the user
     pub phone_number: String,
     // attempt created at
-    pub created_at: Option<i32>,
+    pub created_at: chrono::DateTime<Utc>,
     // attempt updated at
-    pub updated_at: Option<i32>,
+    pub updated_at: chrono::DateTime<Utc>,
     // video url of attempt
     pub video_url: Option<String>,
     // twitter url of attempt

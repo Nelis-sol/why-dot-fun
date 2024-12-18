@@ -45,7 +45,6 @@ pub async fn end_handler(
             });
 
 
-
             twiml.add(&Redirect {
                 url: "/judge".to_owned(),
                 method: Method::Post,
