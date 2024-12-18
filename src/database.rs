@@ -205,10 +205,10 @@ impl Database {
                 sponsor_total_reward,
                 sponsor_attempt_reward,
                 sponsor_background_url,
-                sponsor_challenge_time,
+                sponsor_challenge_time
             )
                 VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8
+                    $1, $2, $3, $4, $5, $6, $7, $8
                 )
                 RETURNING *
             "#,
@@ -222,7 +222,8 @@ impl Database {
             sponsor.sponsor_challenge_time,
         )
         .fetch_one(&self.pool)
-        .await?)
+        .await?
+        )
     }
 
 
