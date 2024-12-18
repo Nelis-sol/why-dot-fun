@@ -234,7 +234,7 @@ impl Database {
                 WHERE phone_number = $2
             "#,
             is_winner,
-            user.phone_number
+            caller_phone_number
         )
         .execute(&self.pool)
         .await?;
