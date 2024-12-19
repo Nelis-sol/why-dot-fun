@@ -86,6 +86,39 @@ impl Database {
         .await?)
     }
 
+
+    /// Gets the winner with the given key from the database.
+    /// Returns `None` if there is no winner with the given key.
+    pub async fn get_attempt_by_pubkey(&self, public_key: String) -> Result<Option<Attempt>> {
+        Ok(sqlx::query_as!(
+            Attempt,
+            r#"
+                SELECT * FROM attempts
+                WHERE pubkey = $1
+            "#,
+            public_key
+        )
+        .fetch_optional(&self.pool)
+        .await?)
+    }
+
+
+    /// Gets the winner with the given key from the database.
+    /// Returns `None` if there is no winner with the given key.
+    pub async fn get_all_attempts_last_14_days(&self) -> Result<Vec<Attempt>> {
+        Ok(sqlx::query_as!(
+            Attempt,
+            r#"
+                SELECT * FROM attempts
+                WHERE created_at BETWEEN NOW() - INTERVAL '14 days' AND NOW()
+                ORDER BY created_at DESC
+            "#,
+        )
+        .fetch_all(&self.pool)
+        .await?)
+    }
+
+
     /// Withdraws the reward tokens from the sponsor with the given ID.
     /// Returns an error if there was a communication error with the database.
     /// Returns `None` if the sponsor does not have enough available tokens to withdraw.

@@ -7,7 +7,9 @@ use serde::{Serialize, Deserialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Attempt {
     // id of the attempt
-    pub id: String,
+    pub id: i32,
+    // public key of the attempt
+    pub pubkey: String,
     // phone number of the user
     pub phone_number: String,
     // attempt created at
@@ -38,7 +40,7 @@ pub struct Attempt {
     pub challenge_transcript: Option<String>,
     // status of the challenge
     pub challenge_status: Option<String>,
-}
+} 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SponsorArgs {
