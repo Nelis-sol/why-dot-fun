@@ -9,7 +9,7 @@ pub struct Attempt {
     // id of the attempt
     pub id: i32,
     // public key of the attempt
-    pub pubkey: String,
+    pub pubkey: Option<String>,
     // phone number of the user
     pub phone_number: String,
     // attempt created at
