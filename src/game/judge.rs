@@ -134,10 +134,19 @@ async fn judge_conversation(
     tokio::spawn(render_video(
         reqwest,
         secrets.clone(),
-        call_sid,
+        call_sid.clone(),
         cached_call.clone(),
         judged.rating,
     ));
+
+    let video_url = format!("https://gamecall-jvp99.ondigitalocean.app/review/drafts/{call_sid}.mp4");
+
+    let _attempt = database
+        .update_attempt_video(caller_phone_number.clone(), video_url)
+        .await
+        .context("Updating attempt with is_winner true")
+        .expect("Failed to update attempt with video url");
+
 
     let result = match judged.won_prize {
         true => won_handler(twilio, database, secrets, caller_phone_number, cached_call).await,

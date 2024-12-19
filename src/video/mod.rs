@@ -9,6 +9,7 @@ use tokio::time::{sleep, timeout};
 mod background;
 mod ffmpeg;
 mod subtitles;
+use crate::Database;
 
 pub async fn render_video(
     reqwest: ReqwestClient,
@@ -64,6 +65,7 @@ pub async fn render_video(
         &output_path,
     )
     .await;
+
 }
 
 /// Waits for the recording to be received by the twilio webhook.
