@@ -193,9 +193,8 @@ impl Database {
 
 
     /// Creates a new attempt in the database.
-    pub async fn create_attempt_with_sponsor(&self, user: &User, sponsor: &Sponsor) -> Result<Attempt> {
-        Ok(sqlx::query_as!(
-            Attempt,
+    pub async fn create_attempt_with_sponsor(&self, user: &User, sponsor: &Sponsor) -> Result<()> {
+        sqlx::query!(
             r#"
                 INSERT INTO attempts (
                 phone_number,
@@ -210,20 +209,20 @@ impl Database {
                 VALUES (
                     $1, $2, $3, $4, $5, $6, $7, $8
                 )
-                RETURNING *
             "#,
             user.phone_number,
-            sponsor.sponsor_question,
-            sponsor.sponsor_name,
-            sponsor.sponsor_token_mint,
-            sponsor.sponsor_total_reward,
-            sponsor.sponsor_attempt_reward,
-            sponsor.sponsor_background_url,
-            sponsor.sponsor_challenge_time,
+            sponsor.start_text,
+            sponsor.name,
+            sponsor.token_mint,
+            sponsor.original_tokens,
+            sponsor.reward_tokens,
+            sponsor.background_url,
+            sponsor.challenge_time,
         )
-        .fetch_one(&self.pool)
-        .await?
-        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())  
     }
 
 
