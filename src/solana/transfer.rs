@@ -7,36 +7,47 @@ use solana_client::rpc_client::RpcClient;
 use solana_sdk::commitment_config::CommitmentConfig;
 use spl_token::instruction::transfer;
 use std::str::FromStr;
-use spl_associated_token_account::get_associated_token_address;
+use crate::solana::keys::get_or_create_ata;
 
 
 pub fn transfer_solana_token(
+    rpc_url: String,
     sender_private_key: String, 
-    receiver_pubkey: String, 
-    token_mint: String, 
+    receiver_pubkey: Pubkey, 
+    token_mint: String,
     amount: u64
-) {
+) -> Result<(), Box<dyn std::error::Error>> {
     log::debug!("Transfer Solana token");
 
     // Initialize the RPC client
-    let rpc_url = "https://mainnet.helius-rpc.com/?api-key=2d6c544c-8fc7-4bac-9352-a60a7bb2a391";
     let commitment_config = CommitmentConfig::confirmed();
     let client = RpcClient::new_with_commitment(rpc_url.to_string(), commitment_config);
 
     // Initialize accounts needed for the transfer
     let sender_keypair: Keypair = Keypair::from_base58_string(&sender_private_key);
-    let receiver_pubkey: Pubkey = Pubkey::from_str(&receiver_pubkey).expect("Invalid receiver address");
     let token_mint: Pubkey = Pubkey::from_str(&token_mint).expect("Invalid token mint address");
 
-    let sender_token_account = get_associated_token_address(
+    let account_info = client.get_account(&token_mint).expect("Failed to fetch account info for token mint");
+    let token_program_id = account_info.owner;
+
+    let sender_token_account = get_or_create_ata(
+        &sender_keypair.pubkey(), 
         &sender_keypair.pubkey(),
         &token_mint,
-    );
+        &token_program_id,
+        &sender_keypair,
+        rpc_url.clone()
+    ).expect("Failed to get or create sender token account");
 
-    let receiver_token_account = get_associated_token_address(
+    let receiver_token_account = get_or_create_ata(
+        &sender_keypair.pubkey(), 
         &receiver_pubkey,
         &token_mint,
-    );
+        &token_program_id,
+        &sender_keypair,
+        rpc_url.clone()
+    ).expect("Failed to get or create receiver token account");
+
 
     let amount_to_transfer: u64 = amount;
 
@@ -59,9 +70,9 @@ pub fn transfer_solana_token(
     tx.sign(&[&sender_keypair], latest_blockhash);
 
     // Send the transaction
-    let signature = client
+    let _signature = client
         .send_and_confirm_transaction(&tx)
         .expect("Failed to send transaction");
 
-    println!("Transaction successful with signature: {}", signature);
+    Ok(())
 }

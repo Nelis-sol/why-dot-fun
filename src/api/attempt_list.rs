@@ -1,16 +1,8 @@
 use axum::response::IntoResponse;
 use axum::Json;
-use serde::{Serialize, Deserialize};
 use crate::api::Attempt;
-use chrono::Utc;
 use axum::Extension;
 use crate::Database;
-
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct AttemptList {
-    pub attempts: Vec<Attempt>,
-}
 
 
 pub async fn attempt_list(

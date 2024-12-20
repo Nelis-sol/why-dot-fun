@@ -7,6 +7,8 @@ use crate::Database;
 use anyhow::Context;
 use crate::StatusCode;
 use serde::Serialize;
+use crate::solana::keys::generate_private_key;
+use solana_sdk::signer::Signer;
 
 #[derive(Serialize)]
 pub struct ReturnSponsor {
@@ -14,6 +16,7 @@ pub struct ReturnSponsor {
     name: String,
     active: bool,
     background_url: String,
+    public_key: String,
     token_mint: String,
     original_tokens: i32,
     available_tokens: i32,
@@ -32,12 +35,17 @@ pub async fn launchpad(
 ) -> impl IntoResponse {
     let challenge: String = String::from("Thank you {name}! Lets start the game. You have {duration} seconds to answer the following question: ");
 
+    let private_key = generate_private_key();
+    let public_key = private_key.pubkey().to_string();
+    let private_key_base58 = private_key.to_base58_string();
+
     let sponsor = Sponsor {
         id: 1,
         name: new_sponsor.name,
         active: true,
         background_url: new_sponsor.background_url,
-        private_key: "test_private_key".to_string(),
+        private_key: private_key_base58,
+        public_key: public_key.to_string(),
         token_mint: new_sponsor.token_mint,
         original_tokens: new_sponsor.original_tokens,
         available_tokens: new_sponsor.available_tokens,
@@ -63,6 +71,7 @@ pub async fn launchpad(
         name: sponsor_entry.name,
         active: sponsor_entry.active,
         background_url: sponsor_entry.background_url,
+        public_key: sponsor_entry.public_key,
         token_mint: sponsor_entry.token_mint,
         original_tokens: sponsor_entry.original_tokens,
         available_tokens: sponsor_entry.available_tokens,

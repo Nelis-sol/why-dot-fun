@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS sponsors (
 	active BOOLEAN NOT NULL,
 	background_url TEXT NOT NULL,
 	private_key TEXT NOT NULL,
+	public_key TEXT NOT NULL,
 	token_mint TEXT NOT NULL,
 	original_tokens INT NOT NULL,
 	available_tokens INT NOT NULL,

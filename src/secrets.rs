@@ -13,6 +13,7 @@ pub struct Secrets {
     pub twitter_api_secret: String,
     pub twitter_access_token: String,
     pub twitter_access_secret: String,
+    pub rpc_url: String,
 }
 
 impl Secrets {
@@ -32,6 +33,8 @@ impl Secrets {
                 .expect("TWITTER_ACCESS_TOKEN must be set"),
             twitter_access_secret: var("TWITTER_ACCESS_SECRET")
                 .expect("TWITTER_ACCESS_SECRET must be set"),
+            rpc_url: var("RPC_URL")
+                .expect("RPC_URL must be set"),
         }
     }
 }

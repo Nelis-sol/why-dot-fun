@@ -21,7 +21,7 @@ static_toml! { static CONFIG = include_toml!("Config.toml"); }
 
 mod cache;
 mod claim;
-mod crypto;
+mod solana;
 mod database;
 mod game;
 mod review;

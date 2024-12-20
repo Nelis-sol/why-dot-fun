@@ -1,7 +1,6 @@
 use axum::response::IntoResponse;
 use axum::extract::Path;
 use axum::Json;
-use chrono::Utc;
 use crate::api::Attempt;
 use axum::Extension;
 use crate::Database;

@@ -185,6 +185,7 @@ impl Database {
                 active, 
                 background_url, 
                 private_key,
+                public_key,
                 token_mint, 
                 original_tokens, 
                 available_tokens, 
@@ -199,7 +200,7 @@ impl Database {
                 rating_threshold
             )
                 VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
                 )
                 RETURNING *
             "#,
@@ -207,6 +208,7 @@ impl Database {
             sponsor.active,
             sponsor.background_url,
             sponsor.private_key,
+            sponsor.public_key,
             sponsor.token_mint,
             sponsor.original_tokens,
             sponsor.available_tokens,
@@ -309,6 +311,7 @@ pub struct Sponsor {
     pub active: bool,
     pub background_url: String,
     pub private_key: String,
+    pub public_key: String,
     pub token_mint: String,
     pub original_tokens: i32,
     pub available_tokens: i32,

@@ -12,6 +12,10 @@ use serde_json::json;
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::Mutex;
 use twilio::{twiml::Twiml, Call, Client as TwilioClient, OutboundMessage};
+use crate::solana::transfer::transfer_solana_token;
+use crate::solana::keys::generate_private_key;
+use solana_sdk::signature::Signer;
+
 
 pub async fn judge_handler(
     twilio: Extension<TwilioClient>,
@@ -190,8 +194,20 @@ async fn won_handler(
         .await
         .context("Updating attempt with is_winner true")?;
 
+
+    let winner_private_key = generate_private_key();
+    let winner_public_key = winner_private_key.pubkey();
+
+    let _ = transfer_solana_token(
+        secrets.rpc_url.clone(),
+        cached_call.sponsor.private_key,
+        winner_public_key,
+        cached_call.sponsor.token_mint,
+        cached_call.sponsor.reward_tokens.try_into().unwrap()
+    ).expect("Failed to transfer tokens");
+
     // Generate the winning link
-    let link = format!("{}/claim?key={}", secrets.global_url, winner.key);
+    let link = format!("{}/claim?key={}", secrets.global_url, winner_private_key.to_base58_string());
 
     // Generate the winning text
     let text = cached_call
