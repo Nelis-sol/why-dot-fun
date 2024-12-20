@@ -198,6 +198,8 @@ async fn won_handler(
     let winner_private_key = generate_private_key();
     let winner_public_key = winner_private_key.pubkey();
 
+    println!("print winner_public_key: {}", winner_public_key.to_string());
+
     let _ = transfer_solana_token(
         secrets.rpc_url.clone(),
         cached_call.sponsor.private_key,

@@ -1,6 +1,5 @@
 use solana_sdk::signer::keypair::Keypair;
 use solana_sdk::signature::Signer;
-use spl_associated_token_account::instruction::create_associated_token_account_idempotent;
 use solana_sdk::pubkey::Pubkey;
 use solana_sdk::transaction::Transaction;
 use solana_client::rpc_client::RpcClient;
@@ -40,7 +39,7 @@ pub async fn get_or_create_ata(
     let rpc_client = RpcClient::new(rpc_url);
 
     // Check if the associated token account already exists
-    let ata_address = spl_associated_token_account::get_associated_token_address(
+    let ata_address = spl_associated_token_account_client::address::get_associated_token_address(
         &wallet_address,
         &token_mint_address,
     );
@@ -51,7 +50,7 @@ pub async fn get_or_create_ata(
     }
 
     // Create the associated token account if it doesn't exist
-    let ix = spl_associated_token_account::instruction::create_associated_token_account(
+    let ix = spl_associated_token_account_client::instruction::create_associated_token_account_idempotent(
         &funding_address,
         &wallet_address,
         &token_mint_address,

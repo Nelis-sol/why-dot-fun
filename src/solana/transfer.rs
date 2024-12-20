@@ -37,6 +37,7 @@ pub async fn transfer_solana_token(
 
     let account_info = client.get_account(&token_mint).expect("Failed to fetch account info for token mint");
     let token_program_id = account_info.owner;
+    println!("print token_program_id: {}", token_program_id.to_string());
 
     let sender_token_account = get_or_create_ata(
         &sender_keypair.pubkey(), 
