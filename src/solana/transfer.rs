@@ -8,6 +8,7 @@ use solana_sdk::commitment_config::CommitmentConfig;
 use spl_token::instruction::transfer;
 use std::str::FromStr;
 use crate::solana::keys::get_or_create_ata;
+use solana_client::rpc_config::RpcSendTransactionConfig;
 
 
 pub async fn transfer_solana_token(
@@ -59,7 +60,7 @@ pub async fn transfer_solana_token(
 
     // Create the transfer instruction
     let transfer_ix = transfer(
-        &spl_token::id(),
+        &token_program_id,
         &sender_token_account,
         &receiver_token_account,
         &sender_keypair.pubkey(),
@@ -67,18 +68,26 @@ pub async fn transfer_solana_token(
         amount_to_transfer,
     )
     .expect("Failed to create transfer instruction");
+    
 
-    // Create the transaction
-    let mut tx = Transaction::new_with_payer(&[transfer_ix], Some(&sender_keypair.pubkey()));
+    let rpc_client = RpcClient::new(rpc_url);
+    let latest_blockhash = rpc_client.get_latest_blockhash()?;
+    
+    let mut transaction = Transaction::new_signed_with_payer(
+        &[transfer_ix], 
+        Some(&sender_keypair.pubkey()),
+        &[sender_keypair],
+        latest_blockhash
+    );
+    
+    rpc_client.send_transaction_with_config(
+        &transaction,
+        RpcSendTransactionConfig {
+            skip_preflight: true,
+            ..Default::default()
+        },
+    )?;
 
-    // Sign the transaction
-    let latest_blockhash = client.get_latest_blockhash().expect("Failed to get blockhash");
-    tx.sign(&[&sender_keypair], latest_blockhash);
-
-    // Send the transaction
-    let _signature = client
-        .send_and_confirm_transaction(&tx)
-        .expect("Failed to send transaction");
 
     Ok(())
 }
