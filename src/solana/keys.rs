@@ -5,6 +5,7 @@ use solana_sdk::transaction::Transaction;
 use solana_client::rpc_client::RpcClient;
 use solana_sdk::commitment_config::CommitmentConfig;
 use crate::secrets::Secrets;
+use solana_client::rpc_config::RpcSendTransactionConfig;
 
 pub fn generate_private_key() -> Keypair {
     log::debug!("Generate new Solana keypair");
@@ -63,7 +64,13 @@ pub async fn get_or_create_ata(
 
     transaction.sign(&[payer], latest_blockhash);
 
-    rpc_client.send_and_confirm_transaction(&transaction)?;
+    rpc_client.send_transaction_with_config(
+        &transaction,
+        RpcSendTransactionConfig {
+            skip_preflight: true,
+            ..Default::default()
+        },
+    )?;
 
     // Return the ATA address after confirming the transaction
     Ok(ata_address)
