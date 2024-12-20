@@ -50,6 +50,8 @@ pub async fn transfer_solana_token(
         rpc_url.clone()
     ).await.expect("Failed to get or create receiver token account");
 
+    println!("receiver_token_account: {}", receiver_token_account.to_string());
+
 
     let amount_to_transfer: u64 = amount;
 

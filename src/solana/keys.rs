@@ -58,7 +58,6 @@ pub async fn get_or_create_ata(
         &token_program_id,
     );
 
-
     let latest_blockhash = rpc_client.get_latest_blockhash()?;
 
     let mut transaction = Transaction::new_signed_with_payer(
