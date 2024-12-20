@@ -53,7 +53,7 @@ pub async fn transfer_solana_token(
 
     let amount_to_transfer: u64 = amount;
 
-    println("transfer function is next");
+    println!("transfer function is next");
 
     // Create the transfer instruction
     let transfer_ix = transfer(
