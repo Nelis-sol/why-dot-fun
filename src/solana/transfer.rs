@@ -29,7 +29,7 @@ pub fn transfer_solana_token(
     let sender_keypair: Keypair = Keypair::from_base58_string(&sender_private_key);
     println!("sender_keypair: {:?}", sender_keypair.secret());
     log::info!("sender_keypair: {:?}", sender_keypair.secret());
-    
+
     let token_mint: Pubkey = Pubkey::from_str(&token_mint).expect("Invalid token mint address");
 
     let account_info = client.get_account(&token_mint).expect("Failed to fetch account info for token mint");
@@ -62,7 +62,7 @@ pub fn transfer_solana_token(
         &sender_token_account,
         &receiver_token_account,
         &sender_keypair.pubkey(),
-        &[],
+        &[&sender_keypair.pubkey()],
         amount_to_transfer,
     )
     .expect("Failed to create transfer instruction");
