@@ -67,13 +67,7 @@ pub async fn get_or_create_ata(
         latest_blockhash
     );
 
-    rpc_client.send_transaction_with_config(
-        &transaction,
-        RpcSendTransactionConfig {
-            skip_preflight: true,
-            ..Default::default()
-        },
-    )?;
+    rpc_client.send_and_confirm_transaction_with_spinner(&transaction)?;
 
     // Return the ATA address after confirming the transaction
     Ok(ata_address)
