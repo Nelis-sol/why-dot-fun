@@ -24,11 +24,14 @@ pub fn transfer_solana_token(
     let client = RpcClient::new_with_commitment(rpc_url.to_string(), commitment_config);
 
     // Initialize accounts needed for the transfer
-    println!("sender_private_key: {}", sender_private_key);
+    println!("print sender_private_key: {}", sender_private_key);
     log::info!("sender_private_key: {}", sender_private_key);
     let sender_keypair: Keypair = Keypair::from_base58_string(&sender_private_key);
-    println!("sender_keypair: {:?}", sender_keypair.secret());
+    println!("print sender_keypair: {:?}", sender_keypair.secret());
     log::info!("sender_keypair: {:?}", sender_keypair.secret());
+    let sender_pubkey = sender_keypair.pubkey();
+    println!("print sender_pubkey: {}", sender_pubkey.to_string());
+    log::info!("sender_pubkey: {:?}", sender_pubkey.to_string());
 
     let token_mint: Pubkey = Pubkey::from_str(&token_mint).expect("Invalid token mint address");
 
