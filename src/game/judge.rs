@@ -195,21 +195,21 @@ async fn won_handler(
         .context("Updating attempt with is_winner true")?;
 
 
-    let winner_private_key = generate_private_key();
-    let winner_public_key = winner_private_key.pubkey();
+    let receiver_private_key = generate_private_key();
+    let receiver_public_key = receiver_private_key.pubkey();
 
-    println!("print winner_public_key: {}", winner_public_key.to_string());
+    println!("print receiver_public_key: {}", receiver_public_key.to_string());
 
     let _ = transfer_solana_token(
         secrets.rpc_url.clone(),
         cached_call.sponsor.private_key,
-        winner_public_key,
+        receiver_public_key,
         cached_call.sponsor.token_mint,
         cached_call.sponsor.reward_tokens.try_into().unwrap()
     ).await.expect("Failed to transfer tokens");
 
     // Generate the winning link
-    let link = format!("{}/claim?key={}", secrets.global_url, winner_private_key.to_base58_string());
+    let link = format!("{}/claim?key={}", secrets.global_url, receiver_private_key.to_base58_string());
 
     // Generate the winning text
     let text = cached_call

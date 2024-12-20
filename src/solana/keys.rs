@@ -6,6 +6,7 @@ use solana_client::rpc_client::RpcClient;
 use solana_sdk::commitment_config::CommitmentConfig;
 use crate::secrets::Secrets;
 use solana_client::rpc_config::RpcSendTransactionConfig;
+use solana_sdk::instruction::Instruction;
 
 pub fn generate_private_key() -> Keypair {
     log::debug!("Generate new Solana keypair");
@@ -29,18 +30,17 @@ pub fn derive_public_key_from_private_key(private_key: &str) -> String {
 }
 
 pub async fn get_or_create_ata(
-    funding_address: &Pubkey, 
+    payer: &Keypair,
     wallet_address: &Pubkey,
     token_mint_address: &Pubkey,
     token_program_id: &Pubkey,
-    payer: &Keypair,
     rpc_url: String,
 ) -> Result<Pubkey, Box<dyn std::error::Error>> {
     
     let rpc_client = RpcClient::new(rpc_url);
 
     // Check if the associated token account already exists
-    let ata_address = spl_associated_token_account_client::address::get_associated_token_address(
+    let ata_address = spl_associated_token_account::get_associated_token_address(
         &wallet_address,
         &token_mint_address,
     );
@@ -51,18 +51,22 @@ pub async fn get_or_create_ata(
     }
 
     // Create the associated token account if it doesn't exist
-    let ix = spl_associated_token_account_client::instruction::create_associated_token_account_idempotent(
-        &funding_address,
+    let create_ata_ix = spl_associated_token_account::instruction::create_associated_token_account(
+        &payer.pubkey(),
         &wallet_address,
         &token_mint_address,
         &token_program_id,
     );
 
-    let mut transaction = Transaction::new_with_payer(&[ix], Some(&payer.pubkey()));
 
     let latest_blockhash = rpc_client.get_latest_blockhash()?;
 
-    transaction.sign(&[payer], latest_blockhash);
+    let mut transaction = Transaction::new_signed_with_payer(
+        &[create_ata_ix], 
+        Some(&payer.pubkey()),
+        &[payer],
+        latest_blockhash
+    );
 
     rpc_client.send_transaction_with_config(
         &transaction,
