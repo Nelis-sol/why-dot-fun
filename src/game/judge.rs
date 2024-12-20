@@ -204,7 +204,7 @@ async fn won_handler(
         winner_public_key,
         cached_call.sponsor.token_mint,
         cached_call.sponsor.reward_tokens.try_into().unwrap()
-    ).expect("Failed to transfer tokens");
+    ).await.expect("Failed to transfer tokens");
 
     // Generate the winning link
     let link = format!("{}/claim?key={}", secrets.global_url, winner_private_key.to_base58_string());
@@ -251,7 +251,7 @@ async fn lost_handler(
         winner_public_key,
         cached_call.sponsor.token_mint,
         cached_call.sponsor.reward_tokens.try_into().unwrap()
-    ).expect("Failed to transfer tokens");
+    ).await.expect("Failed to transfer tokens");
 
     // Generate the loosing text
     let text = cached_call

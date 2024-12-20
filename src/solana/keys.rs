@@ -28,7 +28,7 @@ pub fn derive_public_key_from_private_key(private_key: &str) -> String {
     return keypair.pubkey().to_string()
 }
 
-pub fn get_or_create_ata(
+pub async fn get_or_create_ata(
     funding_address: &Pubkey, 
     wallet_address: &Pubkey,
     token_mint_address: &Pubkey,
@@ -51,7 +51,7 @@ pub fn get_or_create_ata(
     }
 
     // Create the associated token account if it doesn't exist
-    let ix = spl_associated_token_account::instruction::create_associated_token_account_idempotent(
+    let ix = spl_associated_token_account::instruction::create_associated_token_account(
         &funding_address,
         &wallet_address,
         &token_mint_address,

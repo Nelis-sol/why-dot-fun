@@ -10,7 +10,7 @@ use std::str::FromStr;
 use crate::solana::keys::get_or_create_ata;
 
 
-pub fn transfer_solana_token(
+pub async fn transfer_solana_token(
     rpc_url: String,
     sender_private_key: String, 
     receiver_pubkey: Pubkey, 
@@ -45,7 +45,7 @@ pub fn transfer_solana_token(
         &token_program_id,
         &sender_keypair,
         rpc_url.clone()
-    ).expect("Failed to get or create sender token account");
+    ).await.expect("Failed to get or create sender token account");
 
     let receiver_token_account = get_or_create_ata(
         &sender_keypair.pubkey(), 
@@ -54,7 +54,7 @@ pub fn transfer_solana_token(
         &token_program_id,
         &sender_keypair,
         rpc_url.clone()
-    ).expect("Failed to get or create receiver token account");
+    ).await.expect("Failed to get or create receiver token account");
 
 
     let amount_to_transfer: u64 = amount;
