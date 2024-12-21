@@ -7,6 +7,7 @@ use solana_sdk::commitment_config::CommitmentConfig;
 use crate::secrets::Secrets;
 use solana_client::rpc_config::RpcSendTransactionConfig;
 use solana_sdk::instruction::Instruction;
+use solana_sdk::compute_budget::ComputeBudgetInstruction;
 
 pub fn generate_private_key() -> Keypair {
     log::debug!("Generate new Solana keypair");
@@ -58,16 +59,25 @@ pub async fn get_or_create_ata(
         &token_program_id,
     );
 
+    let modify_compute_units = ComputeBudgetInstruction::set_compute_unit_limit(1000);
+    let set_priority_fee = ComputeBudgetInstruction::set_compute_unit_price(10);
+
     let latest_blockhash = rpc_client.get_latest_blockhash()?;
 
     let mut transaction = Transaction::new_signed_with_payer(
-        &[create_ata_ix], 
+        &[create_ata_ix, modify_compute_units, set_priority_fee], 
         Some(&payer.pubkey()),
         &[payer],
         latest_blockhash
     );
 
-    rpc_client.send_and_confirm_transaction_with_spinner(&transaction)?;
+
+
+
+
+    let signature = rpc_client.send_and_confirm_transaction_with_spinner(&transaction)?;
+
+    println!("signature: {}", signature.to_string());
 
     // Return the ATA address after confirming the transaction
     Ok(ata_address)

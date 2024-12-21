@@ -9,6 +9,7 @@ use spl_token::instruction::transfer;
 use std::str::FromStr;
 use crate::solana::keys::get_or_create_ata;
 use solana_client::rpc_config::RpcSendTransactionConfig;
+use solana_sdk::compute_budget::ComputeBudgetInstruction;
 
 
 pub async fn transfer_solana_token(
@@ -71,16 +72,22 @@ pub async fn transfer_solana_token(
     
 
     let rpc_client = RpcClient::new(rpc_url);
+
+    let modify_compute_units = ComputeBudgetInstruction::set_compute_unit_limit(1000);
+    let set_priority_fee = ComputeBudgetInstruction::set_compute_unit_price(10);
+
     let latest_blockhash = rpc_client.get_latest_blockhash()?;
     
     let mut transaction = Transaction::new_signed_with_payer(
-        &[transfer_ix], 
+        &[transfer_ix, modify_compute_units, set_priority_fee], 
         Some(&sender_keypair.pubkey()),
         &[sender_keypair],
         latest_blockhash
     );
     
-    rpc_client.send_and_confirm_transaction_with_spinner(&transaction)?;
+    let signature = rpc_client.send_and_confirm_transaction_with_spinner(&transaction)?;
+
+    println!("signature: {}", signature.to_string());
 
 
     Ok(())
