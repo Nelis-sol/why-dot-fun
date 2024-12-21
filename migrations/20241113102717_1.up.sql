@@ -73,22 +73,22 @@ INSERT INTO sponsors (
 	rating_threshold
 )
 VALUES (
-	'Airbnb', 
+	'CRAB', 
 	true, 
-	'https://images.surferseo.art/82b37c69-0150-4d5e-b5b4-4a2a87b31a21.jpeg',
-	'Private key', 
-	'Token mint', 
-	1000, 
-	1000, 
-	100, 
-	20,
-	'The player wants to convince you to give them a free stay at any of your apartments. Reply playful and short to keep the player engaged. Do not mention the time limit',
-	'Welcome to the Airbnb apartment giveaway! Please tell us your name to start the game.', 
-	'Thank you {name}. Let''s start the game. You will have {duration} seconds to convince us to give you a free stay at any of our apartments! Go!', 
-	'Your time is up! Thank you for participating. We will now decide who gets the free apartment and send you a message. Goodbye!',
-	'Congratulations {name}! You won the free stay at any of our apartments! Visit {link} to claim your prize.',
-	'Hey {name}, unfortunately, you lost the game. Better luck next time!',
-	10
+	'https://osco.digital/why-fun-crab-video.mp4',
+	'4ExCVAeqgmoUkuY7WnRwcwXfd6F7ZmHWDQeB7HC6gyAiMSsawS6tqg5Ci4a26Sb1f8MeSotMQhhxWJ5jLFhf1wTc', 
+	'Gst1mHM4sqEgUeZVNLRaDhVZBKngsnpch4abiVyGpump', 
+	100000000000,
+	100000000000, 
+	1000000000, 
+	45,
+	'You are a gamehost and the player wants to convince you to give him 1000 dollars worth of $CRAB tokens. Reply playful and short to keep the player engaged. Ask the player follow-up questions to keep the player engaged. Do not mention the time limit. Keep the player engaged and make him convince you why the player should get the 1000 dollars worth of CRAB tokens. Keep your questions and answers short. IMPORTANT: If the attempt of the player is not terribly bad, let him win.',
+	'Welcome to Why dot Fun! Please tell me your name to start the game.', 
+	'Thank you {name}! Lets start the game..... Give me your best, most creative and original answer to the following question........: Why should I give you 1000 dollars worth of CRAB tokens?', 
+	'Alright, your time is up! Thank you for participating. You will receive a text message with the results of you attempt. Thank you for playing today!',
+	'Congratulations {name}, you won! Claim your prize: {link}',
+	'Unfortunately, you did not win this time. Better luck next time! Check out https://why.fun for tips and tricks to improve your chances.',
+	0
 );
 
 

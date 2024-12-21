@@ -244,19 +244,6 @@ async fn lost_handler(
         .await
         .context("Updating attempt with is_winner false")?;
 
-    let receiver_private_key = generate_private_key();
-    let receiver_public_key = receiver_private_key.pubkey();
-
-    println!("print receiver_public_key: {}", receiver_public_key.to_string());
-
-    let _ = transfer_solana_token(
-        secrets.rpc_url.clone(),
-        cached_call.sponsor.private_key,
-        receiver_public_key,
-        cached_call.sponsor.token_mint,
-        cached_call.sponsor.reward_tokens.try_into().unwrap()
-    ).await.expect("Failed to transfer tokens");
-
     // Generate the loosing text
     let text = cached_call
         .sponsor
