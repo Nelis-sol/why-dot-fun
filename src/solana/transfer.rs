@@ -73,8 +73,8 @@ pub async fn transfer_solana_token(
 
     let rpc_client = RpcClient::new(rpc_url);
 
-    let modify_compute_units = ComputeBudgetInstruction::set_compute_unit_limit(1000);
-    let set_priority_fee = ComputeBudgetInstruction::set_compute_unit_price(10);
+    let modify_compute_units = ComputeBudgetInstruction::set_compute_unit_limit(30000);
+    let set_priority_fee = ComputeBudgetInstruction::set_compute_unit_price(1000);
 
     let latest_blockhash = rpc_client.get_latest_blockhash()?;
     
