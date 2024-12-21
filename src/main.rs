@@ -81,15 +81,12 @@ async fn main() {
         .expect("Failed to connect to the server");
 
 
-    let cors = CorsLayer::new()
-        .allow_origin("https://why.fun".parse::<HeaderValue>().unwrap())
-        .allow_origin("https://launchpad.why.fun".parse::<HeaderValue>().unwrap())
-        .allow_origin("https://claim.why.fun".parse::<HeaderValue>().unwrap())
-        .allow_origin("https://www.why.fun".parse::<HeaderValue>().unwrap())
-        .allow_origin("https://gamecall-jvp99.ondigitalocean.app".parse::<HeaderValue>().unwrap())
-        .allow_methods(Any)
-        .allow_headers(Any)
-        .allow_credentials(false);
+        let cors = CorsLayer::new()
+            .allow_origin("*".parse::<HeaderValue>().unwrap())
+            .allow_methods(Any)
+            .allow_headers(Any)
+            .allow_credentials(false);
+
 
     // Initialize the webserver routes
     log::info!("Initializing the webserver routes");
