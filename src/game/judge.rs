@@ -209,7 +209,7 @@ async fn won_handler(
     ).await.expect("Failed to transfer tokens");
 
     // Generate the winning link
-    let link = format!("{}/claim?key={}", secrets.global_url, receiver_private_key.to_base58_string());
+    let link = format!("https://claim.why.fun/key={}", receiver_private_key.to_base58_string());
 
     // Generate the winning text
     let text = cached_call
