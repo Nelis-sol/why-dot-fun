@@ -55,7 +55,7 @@ pub async fn transfer_solana_token(
     println!("receiver_token_account: {}", receiver_token_account.to_string());
 
 
-    let amount_to_transfer: u64 = amount;
+    let amount_to_transfer: u64 = amount * 1000000000;
 
     println!("transfer function is next");
 
