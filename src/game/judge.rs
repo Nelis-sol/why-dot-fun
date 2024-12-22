@@ -183,7 +183,7 @@ async fn won_handler(
     };
 
     // Generate a winner entry in the database
-    let winner = database
+    let _winner = database
         .create_winner(cached_call.name.clone(), cached_call.sponsor.id)
         .await
         .context("Creating winner")?;

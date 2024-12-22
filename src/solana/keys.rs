@@ -1,42 +1,39 @@
-use solana_sdk::signer::keypair::Keypair;
-use solana_sdk::signature::Signer;
-use solana_sdk::pubkey::Pubkey;
-use solana_sdk::transaction::Transaction;
 use solana_client::rpc_client::RpcClient;
-use solana_sdk::commitment_config::CommitmentConfig;
-use crate::secrets::Secrets;
 use solana_client::rpc_config::RpcSendTransactionConfig;
+use solana_sdk::pubkey::Pubkey;
+use solana_sdk::signature::Signer;
+use solana_sdk::signer::keypair::Keypair;
+use solana_sdk::transaction::Transaction;
 
 pub fn generate_private_key() -> Keypair {
     log::debug!("Generate new Solana keypair");
 
     let keypair = Keypair::new();
-    return keypair
+    return keypair;
 }
 
-pub fn generate_private_key_base58() -> String {
+pub fn _generate_private_key_base58() -> String {
     log::debug!("Generate new Solana keypair");
 
     let keypair = Keypair::new();
-    return keypair.to_base58_string()
+    return keypair.to_base58_string();
 }
 
-pub fn derive_public_key_from_private_key(private_key: &str) -> String {
+pub fn _derive_public_key_from_private_key(private_key: &str) -> String {
     log::debug!("Derive Solana public key from private key");
 
     let keypair = Keypair::from_base58_string(private_key);
-    return keypair.pubkey().to_string()
+    return keypair.pubkey().to_string();
 }
 
 pub async fn get_or_create_ata(
-    funding_address: &Pubkey, 
+    funding_address: &Pubkey,
     wallet_address: &Pubkey,
     token_mint_address: &Pubkey,
     token_program_id: &Pubkey,
     payer: &Keypair,
     rpc_url: String,
 ) -> Result<Pubkey, Box<dyn std::error::Error>> {
-    
     let rpc_client = RpcClient::new(rpc_url);
 
     // Check if the associated token account already exists
@@ -75,8 +72,6 @@ pub async fn get_or_create_ata(
     // Return the ATA address after confirming the transaction
     Ok(ata_address)
 }
-
-
 
 // funding_address,
 // wallet_address,

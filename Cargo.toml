@@ -13,6 +13,7 @@ axum-extra = { version = "0.9", features = ["cookie"] }
 chrono = "0.4"
 dotenv = "0.15"
 env_logger = "0.11"
+jsonwebtoken = "9.3"
 log = "0.4"
 infer = "0.16"
 reqwest = "0.12"

@@ -4,7 +4,6 @@ use axum::{
     routing::{get, post},
     Extension, Router,
 };
-use axum::extract::Path;
 use cache::CachedCall;
 use database::Database;
 use reqwest::Client as ReqwestClient;
@@ -19,15 +18,16 @@ use twitter_v2::{authorization::Oauth1aToken, TwitterApi};
 
 static_toml! { static CONFIG = include_toml!("Config.toml"); }
 
+mod api;
 mod cache;
 mod claim;
-mod solana;
 mod database;
 mod game;
 mod review;
 mod secrets;
+mod solana;
+mod twilio_token;
 mod video;
-mod api;
 
 #[tokio::main]
 async fn main() {
@@ -44,7 +44,7 @@ async fn main() {
 
     // Initialize the twilio client
     log::info!("Initializing the Twilio client");
-    let twilio = TwilioClient::new(&secrets.twilio_account_id, &secrets.twilio_auth_token);
+    let twilio = TwilioClient::new(&secrets.twilio_account_sid, &secrets.twilio_auth_token);
 
     // Initialize the OpenAI client
     log::info!("Initializing the OpenAI client");
@@ -88,7 +88,11 @@ async fn main() {
         .route("/end", post(game::end::end_handler))
         .route("/judge", post(game::judge::judge_handler))
         .route("/recording", post(game::recording::recording_handler))
-        .route("/api/attempts/:id", get(api::attempt_single::attempt_single))
+        .route("/twilio-token", get(twilio_token::generate_jwt))
+        .route(
+            "/api/attempts/:id",
+            get(api::attempt_single::attempt_single),
+        )
         .route("/api/attempts", get(api::attempt_list::attempt_list))
         .route("/api/launchpad", post(api::launchpad::launchpad))
         .route(
