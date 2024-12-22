@@ -15,6 +15,9 @@ use tokio::{net::TcpListener, sync::Mutex};
 use tower_http::services::ServeDir;
 use twilio::Client as TwilioClient;
 use twitter_v2::{authorization::Oauth1aToken, TwitterApi};
+use tower_http::cors::{Any, CorsLayer};
+use reqwest::header::HeaderValue;
+
 
 static_toml! { static CONFIG = include_toml!("Config.toml"); }
 
@@ -77,6 +80,14 @@ async fn main() {
         .await
         .expect("Failed to connect to the server");
 
+
+        let cors = CorsLayer::new()
+            .allow_origin("*".parse::<HeaderValue>().unwrap())
+            .allow_methods(Any)
+            .allow_headers(Any)
+            .allow_credentials(false);
+
+
     // Initialize the webserver routes
     log::info!("Initializing the webserver routes");
     let router = Router::new()
@@ -102,6 +113,7 @@ async fn main() {
         .nest_service("/claim", claim::router())
         .nest_service("/review", review::router())
         .nest_service("/static", ServeDir::new("static"))
+        .layer(cors)
         .layer(Extension(secrets))
         .layer(Extension(twilio))
         .layer(Extension(openai))
@@ -120,17 +132,3 @@ async fn main() {
 pub async fn health_check() -> impl IntoResponse {
     StatusCode::OK
 }
-
-// pub async fn attempts_all() -> impl IntoResponse {
-//     StatusCode::OK
-// }
-
-// pub async fn attempts_by_id(Path(id): Path<String>) -> impl IntoResponse {
-//     StatusCode::OK
-// }
-
-// pub async fn launchpad_create(
-//     Json(payload): Json<LaunchpadCreatePayload>
-// ) -> impl IntoResponse {
-//     StatusCode::OK
-// }

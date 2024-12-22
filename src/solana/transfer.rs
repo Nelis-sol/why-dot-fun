@@ -8,6 +8,7 @@ use solana_sdk::commitment_config::CommitmentConfig;
 use spl_token::instruction::transfer;
 use std::str::FromStr;
 use crate::solana::keys::get_or_create_ata;
+use solana_sdk::compute_budget::ComputeBudgetInstruction;
 
 
 pub async fn transfer_solana_token(
@@ -24,45 +25,42 @@ pub async fn transfer_solana_token(
     let client = RpcClient::new_with_commitment(rpc_url.to_string(), commitment_config);
 
     // Initialize accounts needed for the transfer
-    println!("print sender_private_key: {}", sender_private_key);
-    log::info!("sender_private_key: {}", sender_private_key);
     let sender_keypair: Keypair = Keypair::from_base58_string(&sender_private_key);
-    println!("print sender_keypair: {:?}", sender_keypair.secret());
-    log::info!("sender_keypair: {:?}", sender_keypair.secret());
-    let sender_pubkey = sender_keypair.pubkey();
-    println!("print sender_pubkey: {}", sender_pubkey.to_string());
-    log::info!("sender_pubkey: {:?}", sender_pubkey.to_string());
 
     let token_mint: Pubkey = Pubkey::from_str(&token_mint).expect("Invalid token mint address");
 
     let account_info = client.get_account(&token_mint).expect("Failed to fetch account info for token mint");
     let token_program_id = account_info.owner;
+
+    println!("print token mint: {}", token_mint.to_string());
     println!("print token_program_id: {}", token_program_id.to_string());
 
     let sender_token_account = get_or_create_ata(
+        &sender_keypair,
         &sender_keypair.pubkey(), 
-        &sender_keypair.pubkey(),
         &token_mint,
         &token_program_id,
-        &sender_keypair,
         rpc_url.clone()
     ).await.expect("Failed to get or create sender token account");
 
     let receiver_token_account = get_or_create_ata(
-        &sender_keypair.pubkey(), 
-        &receiver_pubkey,
+        &sender_keypair,
+        &receiver_pubkey, 
         &token_mint,
         &token_program_id,
-        &sender_keypair,
         rpc_url.clone()
     ).await.expect("Failed to get or create receiver token account");
 
+    println!("receiver_token_account: {}", receiver_token_account.to_string());
 
-    let amount_to_transfer: u64 = amount;
+
+    let amount_to_transfer: u64 = amount * 1000000000;
+
+    println!("transfer function is next");
 
     // Create the transfer instruction
     let transfer_ix = transfer(
-        &spl_token::id(),
+        &token_program_id,
         &sender_token_account,
         &receiver_token_account,
         &sender_keypair.pubkey(),
@@ -70,18 +68,26 @@ pub async fn transfer_solana_token(
         amount_to_transfer,
     )
     .expect("Failed to create transfer instruction");
+    
 
-    // Create the transaction
-    let mut tx = Transaction::new_with_payer(&[transfer_ix], Some(&sender_keypair.pubkey()));
+    let rpc_client = RpcClient::new(rpc_url);
 
-    // Sign the transaction
-    let latest_blockhash = client.get_latest_blockhash().expect("Failed to get blockhash");
-    tx.sign(&[&sender_keypair], latest_blockhash);
+    let modify_compute_units = ComputeBudgetInstruction::set_compute_unit_limit(30000);
+    let set_priority_fee = ComputeBudgetInstruction::set_compute_unit_price(1000);
 
-    // Send the transaction
-    let _signature = client
-        .send_and_confirm_transaction(&tx)
-        .expect("Failed to send transaction");
+    let latest_blockhash = rpc_client.get_latest_blockhash()?;
+    
+    let transaction = Transaction::new_signed_with_payer(
+        &[transfer_ix, modify_compute_units, set_priority_fee], 
+        Some(&sender_keypair.pubkey()),
+        &[sender_keypair],
+        latest_blockhash
+    );
+    
+    let signature = rpc_client.send_and_confirm_transaction_with_spinner(&transaction)?;
+
+    println!("signature: {}", signature.to_string());
+
 
     Ok(())
 }

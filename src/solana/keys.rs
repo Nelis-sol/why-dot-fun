@@ -1,8 +1,8 @@
 use solana_client::rpc_client::RpcClient;
-use solana_client::rpc_config::RpcSendTransactionConfig;
+use solana_sdk::compute_budget::ComputeBudgetInstruction;
 use solana_sdk::pubkey::Pubkey;
-use solana_sdk::signature::Signer;
-use solana_sdk::signer::keypair::Keypair;
+use solana_sdk::signature::Keypair;
+use solana_sdk::signer::Signer;
 use solana_sdk::transaction::Transaction;
 
 pub fn generate_private_key() -> Keypair {
@@ -27,17 +27,16 @@ pub fn _derive_public_key_from_private_key(private_key: &str) -> String {
 }
 
 pub async fn get_or_create_ata(
-    funding_address: &Pubkey,
+    payer: &Keypair,
     wallet_address: &Pubkey,
     token_mint_address: &Pubkey,
     token_program_id: &Pubkey,
-    payer: &Keypair,
     rpc_url: String,
 ) -> Result<Pubkey, Box<dyn std::error::Error>> {
     let rpc_client = RpcClient::new(rpc_url);
 
     // Check if the associated token account already exists
-    let ata_address = spl_associated_token_account_client::address::get_associated_token_address(
+    let ata_address = spl_associated_token_account::get_associated_token_address(
         &wallet_address,
         &token_mint_address,
     );
@@ -48,26 +47,28 @@ pub async fn get_or_create_ata(
     }
 
     // Create the associated token account if it doesn't exist
-    let ix = spl_associated_token_account_client::instruction::create_associated_token_account_idempotent(
-        &funding_address,
+    let create_ata_ix = spl_associated_token_account::instruction::create_associated_token_account(
+        &payer.pubkey(),
         &wallet_address,
         &token_mint_address,
         &token_program_id,
     );
 
-    let mut transaction = Transaction::new_with_payer(&[ix], Some(&payer.pubkey()));
+    let modify_compute_units = ComputeBudgetInstruction::set_compute_unit_limit(30000);
+    let set_priority_fee = ComputeBudgetInstruction::set_compute_unit_price(1000);
 
     let latest_blockhash = rpc_client.get_latest_blockhash()?;
 
-    transaction.sign(&[payer], latest_blockhash);
+    let transaction = Transaction::new_signed_with_payer(
+        &[create_ata_ix, modify_compute_units, set_priority_fee],
+        Some(&payer.pubkey()),
+        &[payer],
+        latest_blockhash,
+    );
 
-    rpc_client.send_transaction_with_config(
-        &transaction,
-        RpcSendTransactionConfig {
-            skip_preflight: true,
-            ..Default::default()
-        },
-    )?;
+    let signature = rpc_client.send_and_confirm_transaction_with_spinner(&transaction)?;
+
+    println!("signature: {}", signature.to_string());
 
     // Return the ATA address after confirming the transaction
     Ok(ata_address)
