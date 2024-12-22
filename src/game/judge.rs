@@ -92,6 +92,8 @@ async fn judge_conversation(
         "additionalProperties": false,
     });
 
+    println!("user: {}, judgement: {:?}", caller_phone_number, schema);
+
     let response_format = ResponseFormat::JsonSchema {
         json_schema: ResponseFormatJsonSchema {
             description: Some(CONFIG.end.schema_description.to_owned()),
@@ -198,18 +200,19 @@ async fn won_handler(
     let receiver_private_key = generate_private_key();
     let receiver_public_key = receiver_private_key.pubkey();
 
-    println!("print receiver_public_key: {}", receiver_public_key.to_string());
 
-    let _ = transfer_solana_token(
+    let signature = transfer_solana_token(
         secrets.rpc_url.clone(),
         cached_call.sponsor.private_key,
         receiver_public_key,
         cached_call.sponsor.token_mint,
         cached_call.sponsor.reward_tokens.try_into().unwrap()
     ).await.expect("Failed to transfer tokens");
+    println!("user: {}, signature: {}", caller_phone_number, signature);
 
     // Generate the winning link
     let link = format!("https://claim.why.fun/key={}", receiver_private_key.to_base58_string());
+    println!("user: {}, link: {}", caller_phone_number, link);
 
     // Generate the winning text
     let text = cached_call

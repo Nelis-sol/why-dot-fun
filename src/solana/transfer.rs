@@ -9,6 +9,7 @@ use spl_token::instruction::transfer;
 use std::str::FromStr;
 use crate::solana::keys::get_or_create_ata;
 use solana_sdk::compute_budget::ComputeBudgetInstruction;
+use solana_sdk::signature::Signature;
 
 
 pub async fn transfer_solana_token(
@@ -17,7 +18,7 @@ pub async fn transfer_solana_token(
     receiver_pubkey: Pubkey, 
     token_mint: String,
     amount: u64
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<Signature, Box<dyn std::error::Error>> {
     log::debug!("Transfer Solana token");
 
     // Initialize the RPC client
@@ -31,9 +32,6 @@ pub async fn transfer_solana_token(
 
     let account_info = client.get_account(&token_mint).expect("Failed to fetch account info for token mint");
     let token_program_id = account_info.owner;
-
-    println!("print token mint: {}", token_mint.to_string());
-    println!("print token_program_id: {}", token_program_id.to_string());
 
     let sender_token_account = get_or_create_ata(
         &sender_keypair,
@@ -51,12 +49,8 @@ pub async fn transfer_solana_token(
         rpc_url.clone()
     ).await.expect("Failed to get or create receiver token account");
 
-    println!("receiver_token_account: {}", receiver_token_account.to_string());
-
 
     let amount_to_transfer: u64 = amount * 1000000000;
-
-    println!("transfer function is next");
 
     // Create the transfer instruction
     let transfer_ix = transfer(
@@ -86,8 +80,6 @@ pub async fn transfer_solana_token(
     
     let signature = rpc_client.send_and_confirm_transaction_with_spinner(&transaction)?;
 
-    println!("signature: {}", signature.to_string());
 
-
-    Ok(())
+    Ok(signature)
 }
