@@ -6,18 +6,17 @@ use axum::{
 };
 use cache::CachedCall;
 use database::Database;
+use reqwest::header::HeaderValue;
 use reqwest::Client as ReqwestClient;
 use reqwest::StatusCode;
 use secrets::Secrets;
 use static_toml::static_toml;
 use std::{collections::HashMap, sync::Arc};
 use tokio::{net::TcpListener, sync::Mutex};
+use tower_http::cors::{Any, CorsLayer};
 use tower_http::services::ServeDir;
 use twilio::Client as TwilioClient;
 use twitter_v2::{authorization::Oauth1aToken, TwitterApi};
-use tower_http::cors::{Any, CorsLayer};
-use reqwest::header::HeaderValue;
-
 
 static_toml! { static CONFIG = include_toml!("Config.toml"); }
 
@@ -80,13 +79,11 @@ async fn main() {
         .await
         .expect("Failed to connect to the server");
 
-
-        let cors = CorsLayer::new()
-            .allow_origin("*".parse::<HeaderValue>().unwrap())
-            .allow_methods(Any)
-            .allow_headers(Any)
-            .allow_credentials(false);
-
+    let cors = CorsLayer::new()
+        .allow_origin("*".parse::<HeaderValue>().unwrap())
+        .allow_methods(Any)
+        .allow_headers(Any)
+        .allow_credentials(false);
 
     // Initialize the webserver routes
     log::info!("Initializing the webserver routes");

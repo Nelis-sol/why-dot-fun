@@ -8,6 +8,7 @@ record_retry = 5
 daily_attempt_limit=3
 daily_response_limit=5
 recording_timeout = 30
+twilio_token_expiry = 90
 
 [name]
 max_tokens = 512

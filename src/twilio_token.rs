@@ -1,4 +1,4 @@
-use crate::secrets::Secrets;
+use crate::{secrets::Secrets, CONFIG};
 use axum::Extension;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
@@ -42,7 +42,7 @@ pub async fn generate_jwt(secrets: Extension<Secrets>) -> String {
     let now = Utc::now();
     let iat = now.timestamp();
     let nbf = iat;
-    let exp = (now + Duration::seconds(1600)).timestamp();
+    let exp = (now + Duration::seconds(CONFIG.settings.twilio_token_expiry)).timestamp();
 
     // Build grants
     let grants = Grants {

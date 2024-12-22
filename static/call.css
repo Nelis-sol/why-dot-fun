@@ -1,0 +1,48 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #111111;
+	color: #ffffff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	font-family: Arial, sans-serif;
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 20px;
+}
+
+.call-button {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #222222;
+	cursor: pointer;
+	transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.call-button:hover {
+	background-color: #444444;
+	transform: scale(1.1);
+}
+
+.call-button img {
+	width: 50%;
+	height: 50%;
+}
+
+.call-timer {
+	font-size: 24px;
+	font-weight: bold;
+	text-align: center;
+	margin-top: 10px;
+}
