@@ -147,12 +147,15 @@ async fn generate_ai_image(
     message: String,
     path: String,
 ) {
+
+    let full_prompt = format!("{} {}", "8K photo quality. Realistic. ", message);
+
     let payload = json!({
         "extra": {
             "response_image_type": "jpeg"
         },
         "request": {
-            "prompt": message,
+            "prompt": full_prompt,
             "model_name": "sd_xl_base_1.0.safetensors",
             "negative_prompt": "nsfw",
             "width": 1024,

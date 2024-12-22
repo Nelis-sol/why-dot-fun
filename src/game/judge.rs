@@ -92,8 +92,6 @@ async fn judge_conversation(
         "additionalProperties": false,
     });
 
-    println!("user: {}, judgement: {:?}", caller_phone_number, schema);
-
     let response_format = ResponseFormat::JsonSchema {
         json_schema: ResponseFormatJsonSchema {
             description: Some(CONFIG.end.schema_description.to_owned()),
@@ -127,6 +125,8 @@ async fn judge_conversation(
         .content
         .as_ref()
         .expect("Failed to get content");
+
+    println!("user: {}, judgement: {}", caller_phone_number, content);
 
     let judged: JudgeResponse =
         serde_json::from_str(&content).expect("Failed to judge conversation");
