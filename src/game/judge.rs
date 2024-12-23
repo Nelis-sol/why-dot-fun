@@ -211,7 +211,7 @@ async fn won_handler(
     println!("user: {}, signature: {}", caller_phone_number, signature);
 
     // Generate the winning link
-    let link = format!("https://claim.why.fun/key={}", receiver_private_key.to_base58_string());
+    let link = format!("https://claim.why.fun/?key={}", receiver_private_key.to_base58_string());
     println!("user: {}, link: {}", caller_phone_number, link);
 
     // Generate the winning text
