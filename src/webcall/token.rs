@@ -1,7 +1,10 @@
+use super::check::check_token;
 use crate::{secrets::Secrets, CONFIG};
 use axum::Extension;
+use axum_auth::AuthBearer;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
+use reqwest::StatusCode;
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -37,7 +40,15 @@ struct Claims {
     grants: Grants,
 }
 
-pub async fn generate_jwt(secrets: Extension<Secrets>) -> String {
+pub async fn generate_jwt(
+    secrets: Extension<Secrets>,
+    AuthBearer(token): AuthBearer,
+) -> Result<String, StatusCode> {
+    // Check whether the user should be allowed to generate a token
+    if !check_token(&token, &secrets) {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+
     // Set current time and expiration
     let now = Utc::now();
     let iat = now.timestamp();
@@ -78,5 +89,8 @@ pub async fn generate_jwt(secrets: Extension<Secrets>) -> String {
         &claims,
         &EncodingKey::from_secret(secrets.twilio_api_secret.as_bytes()),
     )
-    .expect("Failed to generate JWT")
+    .map_err(|e| {
+        log::error!("Error encoding Twilio token: {e:?}");
+        StatusCode::INTERNAL_SERVER_ERROR
+    })
 }

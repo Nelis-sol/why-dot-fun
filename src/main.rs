@@ -28,8 +28,8 @@ mod game;
 mod review;
 mod secrets;
 mod solana;
-mod twilio_token;
 mod video;
+mod webcall;
 
 #[tokio::main]
 async fn main() {
@@ -96,7 +96,6 @@ async fn main() {
         .route("/end", post(game::end::end_handler))
         .route("/judge", post(game::judge::judge_handler))
         .route("/recording", post(game::recording::recording_handler))
-        .route("/twilio-token", get(twilio_token::generate_jwt))
         .route(
             "/api/attempts/:id",
             get(api::attempt_single::attempt_single),
@@ -107,6 +106,7 @@ async fn main() {
             "/redirect-gather/*path",
             post(game::gather::redirect_gather_handler),
         )
+        .nest_service("/", webcall::router())
         .nest_service("/claim", claim::router())
         .nest_service("/review", review::router())
         .nest_service("/static", ServeDir::new("static"))

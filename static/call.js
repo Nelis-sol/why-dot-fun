@@ -2,22 +2,28 @@ document.addEventListener("DOMContentLoaded", () => {
 	const callButton = document.getElementById("callButton");
 	const hangupButton = document.getElementById("hangupButton");
 	const callTimer = document.getElementById("callTimer");
+	const payButton = document.getElementById("payButton");
 
 	let device;
 	let callStartTime;
 	let timerInterval;
 
-	async function fetchTwilioToken() {
-		const response = await fetch('/twilio-token');
+	async function fetchTwilioToken(authToken) {
+		const response = await fetch('/twilio-token', {
+			headers: {
+				'Authorization': `Bearer ${authToken}`
+			}
+		});
+
 		if (!response.ok) {
 			throw new Error('Failed to fetch Twilio token');
 		}
 		return response.text();
 	}
 
-	async function initializeTwilio() {
+	async function initializeTwilio(authToken) {
 		try {
-			const token = await fetchTwilioToken();
+			const token = await fetchTwilioToken(authToken);
 			device = new Twilio.Device(token);
 
 
@@ -73,6 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
 				startTimer();
 				console.log('Call started.');
 			}
+		} else {
+			alert('Please pay to make a call.');
 		}
 	}
 
@@ -86,6 +94,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	callButton.addEventListener("click", startCall);
 	hangupButton.addEventListener("click", endCall);
-
-	initializeTwilio();
+	payButton.addEventListener("click", initializeTwilio);
 });
