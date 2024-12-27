@@ -72,7 +72,7 @@ pub async fn render_video(
 
     let file_name = format!("cache/drafts/{call_sid}.mp4");
     let bucket_name = String::from("gamecall");
-    let key = call_sid; // in aws s3 a key = filename
+    let key = format!("{call_sid}.mp4"); // in aws s3 a key = filename
     let spaces_url = secrets.spaces_url;
 
     // note here that the "None" is in place of a session token
