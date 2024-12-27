@@ -5,6 +5,10 @@ use reqwest::Client as ReqwestClient;
 use std::time::Duration;
 use subtitles::generate_subtitles_srt;
 use tokio::time::{sleep, timeout};
+use axum::Error;
+use aws_config::Region;
+use aws_credential_types::Credentials;
+use aws_sdk_s3::Client;
 
 mod background;
 mod ffmpeg;
@@ -64,6 +68,46 @@ pub async fn render_video(
         &output_path,
     )
     .await;
+
+
+    let file_name = format!("cache/drafts/{call_sid}.mp4");
+    let bucket_name = String::from("gamecall");
+    let key = call_sid; // in aws s3 a key = filename
+    let spaces_url = secrets.spaces_url;
+
+    // note here that the "None" is in place of a session token
+    let creds = Credentials::new(
+        secrets.spaces_access_key, 
+        secrets.spaces_secret_key, 
+        None, 
+        None, 
+        "digitalocean"
+    );
+
+    let cfg = aws_config::from_env()
+        .endpoint_url(spaces_url)
+        .region(Region::new("us-east-1"))
+        .credentials_provider(creds)
+        .load().await;
+
+    let s3 = Client::new(&cfg);
+
+    let body = aws_sdk_s3::primitives::ByteStream::from_path(std::path::Path::new(&file_name))
+        .await
+        .expect("Failed to read file");
+
+    let result = s3
+        .put_object()
+        .bucket(bucket_name)
+        .key(key)
+        .body(body)
+        .send()
+        .await
+        .map_err(|e| Error::new(e));
+
+    println!("Upload result: {:?}", result);
+
+
 }
 
 /// Waits for the recording to be received by the twilio webhook.

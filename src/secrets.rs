@@ -17,6 +17,9 @@ pub struct Secrets {
     pub twitter_access_token: String,
     pub twitter_access_secret: String,
     pub rpc_url: String,
+    pub spaces_secret_key: String,
+    pub spaces_access_key: String,
+    pub spaces_url: String,
 }
 
 impl Secrets {
@@ -40,6 +43,9 @@ impl Secrets {
             twitter_access_secret: var("TWITTER_ACCESS_SECRET")
                 .expect("TWITTER_ACCESS_SECRET must be set"),
             rpc_url: var("RPC_URL").expect("RPC_URL must be set"),
+            spaces_secret_key: var("SPACES_SECRET_KEY").expect("SPACES_SECRET_KEY must be set"),
+            spaces_access_key: var("SPACES_ACCESS_KEY").expect("SPACES_ACCESS_KEY must be set"),
+            spaces_url: var("SPACES_URL").expect("SPACES_URL must be set"),
         }
     }
 }

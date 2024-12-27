@@ -32,3 +32,6 @@ solana-sdk = "2.1.4"
 spl-token = "7.0.0"
 solana-client = "2.1.4"
 spl-associated-token-account = "6.0.0"
+aws-sdk-s3 = { version = "1.4.0", features = ["rt-tokio"] }
+aws-config = { version = "1.1.7", features = ["behavior-version-latest"] }
+aws-credential-types = "1.2.1"
