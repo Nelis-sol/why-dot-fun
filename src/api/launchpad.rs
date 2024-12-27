@@ -33,7 +33,7 @@ pub async fn launchpad(
     Extension(database): Extension<Database>,
     Json(new_sponsor): Json<SponsorArgs>,
 ) -> impl IntoResponse {
-    let challenge: String = String::from("Thank you {name}! Lets start the game. You have {duration} seconds to answer the following question: ");
+    let challenge: String = String::from("Thank you {name}! Lets start the game: ");
 
     let private_key = generate_private_key();
     let public_key = private_key.pubkey().to_string();
@@ -53,8 +53,8 @@ pub async fn launchpad(
         challenge_time: new_sponsor.challenge_time,
         system_instruction: new_sponsor.system_instruction,
         greeting_text: "Welcome to Why dot Fun. Please tell me your name to start the game.".to_string(),
-        challenge_text: new_sponsor.challenge,
-        start_text: format!("{} {}", challenge, new_sponsor.start_text),
+        challenge_text: new_sponsor.challenge.clone(),
+        start_text: format!("{} {}", challenge, new_sponsor.challenge),
         end_text: "Alright, your time is up! Thank you for participating. You will receive a text message with the results of you attempt. Thank you for playing today!".to_string(),
         won_text: "Congratulations, you won! Claim you prize: https://www.why.fun/crab?winner=SdfIjwfdsoBYNOUufd".to_string(),
         lost_text: "Unfortunately, you lost the game. Better luck next time!".to_string(),
