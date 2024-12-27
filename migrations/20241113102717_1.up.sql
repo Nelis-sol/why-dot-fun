@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS sponsors (
 	challenge_time INT NOT NULL,
 	system_instruction TEXT NOT NULL,
 	greeting_text TEXT NOT NULL,
+	challenge_text TEXT NOT NULL,
 	start_text TEXT NOT NULL,
 	end_text TEXT NOT NULL,
 	won_text TEXT NOT NULL,

@@ -53,6 +53,7 @@ pub async fn launchpad(
         challenge_time: new_sponsor.challenge_time,
         system_instruction: new_sponsor.system_instruction,
         greeting_text: "Welcome to Why dot Fun. Please tell me your name to start the game.".to_string(),
+        challenge_text: new_sponsor.challenge,
         start_text: format!("{} {}", challenge, new_sponsor.start_text),
         end_text: "Alright, your time is up! Thank you for participating. You will receive a text message with the results of you attempt. Thank you for playing today!".to_string(),
         won_text: "Congratulations, you won! Claim you prize: https://www.why.fun/crab?winner=SdfIjwfdsoBYNOUufd".to_string(),

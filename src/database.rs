@@ -193,6 +193,7 @@ impl Database {
                 challenge_time,
                 system_instruction,
                 greeting_text, 
+                challenge_text,
                 start_text, 
                 end_text,
                 won_text,
@@ -200,7 +201,7 @@ impl Database {
                 rating_threshold
             )
                 VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
                 )
                 RETURNING *
             "#,
@@ -216,6 +217,7 @@ impl Database {
             sponsor.challenge_time,
             sponsor.system_instruction,
             sponsor.greeting_text,
+            sponsor.challenge_text,
             sponsor.start_text,
             sponsor.end_text,
             sponsor.won_text,
@@ -246,7 +248,7 @@ impl Database {
                 )
             "#,
             user.phone_number,
-            sponsor.start_text,
+            sponsor.challenge_text,
             sponsor.name,
             sponsor.token_mint,
             sponsor.original_tokens,
@@ -320,6 +322,7 @@ pub struct Sponsor {
     pub system_instruction: String,
     pub greeting_text: String,
     pub start_text: String,
+    pub challenge_text: String,
     pub end_text: String,
     pub won_text: String,
     pub lost_text: String,

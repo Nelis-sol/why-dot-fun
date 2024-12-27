@@ -52,6 +52,7 @@ pub struct SponsorArgs {
     pub reward_tokens: i32,
     pub challenge_time: i32,
     pub system_instruction: String,
+    pub challenge: String,
     pub start_text: String,
     pub rating_threshold: i32,
 }
