@@ -145,7 +145,7 @@ async fn judge_conversation(
         judged.rating,
     ));
 
-    let video_url = format!("https://gamecall-jvp99.ondigitalocean.app/review/drafts/{call_sid}.mp4");
+    let video_url = format!("https://gamecall.ams3.cdn.digitaloceanspaces.com/{call_sid}.mp4");
 
     let _attempt = database
         .update_attempt_video(caller_phone_number.clone(), video_url)
