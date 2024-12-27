@@ -9,6 +9,7 @@ use axum::Error;
 use aws_config::Region;
 use aws_credential_types::Credentials;
 use aws_sdk_s3::Client;
+use aws_sdk_s3::types::ObjectCannedAcl;
 
 mod background;
 mod ffmpeg;
@@ -101,6 +102,7 @@ pub async fn render_video(
         .bucket(bucket_name)
         .key(key)
         .body(body)
+        .acl(ObjectCannedAcl::PublicRead)
         .send()
         .await
         .map_err(|e| Error::new(e));
