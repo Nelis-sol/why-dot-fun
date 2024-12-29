@@ -2,13 +2,14 @@ pub mod attempt_list;
 pub mod attempt_single;
 pub mod launchpad;
 pub mod payment;
+pub mod verify_winner;
 
 use chrono::Utc;
 use serde::{Serialize, Deserialize};
 use solana_sdk::transaction::Transaction;
 
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Attempt {
     // id of the attempt
     pub id: i32,

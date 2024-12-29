@@ -105,6 +105,26 @@ impl Database {
     }
 
 
+
+    /// Gets the winner with the given key from the database.
+    /// Returns `None` if there is no winner with the given key.
+    pub async fn get_attempt_result_by_phone_number(&self, phone_number: String) -> Result<Option<Attempt>> {
+        Ok(sqlx::query_as!(
+            Attempt,
+            r#"
+                SELECT * FROM attempts
+                WHERE phone_number = $1
+                ORDER BY created_at DESC
+                LIMIT 1
+            "#,
+            phone_number
+        )
+        .fetch_optional(&self.pool)
+        .await?)
+    }
+
+
+
     pub async fn update_attempt_winner_url(&self, phone_number: String, winner_url: String) -> Result<()> {
         sqlx::query!(
             r#"
