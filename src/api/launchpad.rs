@@ -9,6 +9,8 @@ use crate::StatusCode;
 use serde::Serialize;
 use crate::solana::keys::generate_private_key;
 use solana_sdk::signer::Signer;
+use crate::secrets::Secrets;
+
 
 #[derive(Serialize)]
 pub struct ReturnSponsor {
@@ -31,9 +33,16 @@ pub struct ReturnSponsor {
     rating_threshold: i32,
 }
 
+#[derive(Serialize)]
+pub struct ResponseData {
+    sponsor: ReturnSponsor,
+    partially_signed_transaction: String,
+}
+
 pub async fn launchpad(
+    _secrets: Extension<Secrets>,
     Extension(database): Extension<Database>,
-    Json(new_sponsor): Json<SponsorArgs>,
+    Json(new_sponsor): Json<SponsorArgs>
 ) -> impl IntoResponse {
     let challenge: String = String::from("Thank you {name}! Lets start the game: ");
 
@@ -64,6 +73,7 @@ pub async fn launchpad(
         rating_threshold: new_sponsor.rating_threshold,
     };
 
+
     let sponsor_entry = database
         .create_sponsor(sponsor)
         .await
@@ -89,6 +99,7 @@ pub async fn launchpad(
         lost_text: sponsor_entry.lost_text,
         rating_threshold: sponsor_entry.rating_threshold,
     };
+
 
     let response = (StatusCode::CREATED, Json(return_sponsor)).into_response();
     response

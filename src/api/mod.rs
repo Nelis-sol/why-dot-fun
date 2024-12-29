@@ -1,6 +1,8 @@
 pub mod attempt_list;
 pub mod attempt_single;
 pub mod launchpad;
+pub mod payment;
+
 use chrono::Utc;
 use serde::{Serialize, Deserialize};
 

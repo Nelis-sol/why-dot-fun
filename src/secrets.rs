@@ -20,6 +20,8 @@ pub struct Secrets {
     pub spaces_secret_key: String,
     pub spaces_access_key: String,
     pub spaces_url: String,
+    pub treasury_private_key: String,
+    pub treasury_public_key: String,
 }
 
 impl Secrets {
@@ -46,6 +48,8 @@ impl Secrets {
             spaces_secret_key: var("SPACES_SECRET_KEY").expect("SPACES_SECRET_KEY must be set"),
             spaces_access_key: var("SPACES_ACCESS_KEY").expect("SPACES_ACCESS_KEY must be set"),
             spaces_url: var("SPACES_URL").expect("SPACES_URL must be set"),
+            treasury_private_key: var("TREASURY_PRIVATE_KEY").expect("TREASURY_PRIVATE_KEY must be set"),
+            treasury_public_key: var("TREASURY_PUBLIC_KEY").expect("TREASURY_PUBLIC_KEY must be set"),
         }
     }
 }

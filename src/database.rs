@@ -181,7 +181,8 @@ impl Database {
             Sponsor,
             r#"
                 INSERT INTO sponsors (
-                name, 
+                name,
+                user_id,
                 active, 
                 background_url, 
                 private_key,
@@ -201,11 +202,12 @@ impl Database {
                 rating_threshold
             )
                 VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
                 )
                 RETURNING *
             "#,
             sponsor.name,
+            sponsor.user_id,
             sponsor.active,
             sponsor.background_url,
             sponsor.private_key,
