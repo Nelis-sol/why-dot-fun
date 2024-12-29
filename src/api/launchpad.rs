@@ -11,7 +11,6 @@ use serde::Serialize;
 use crate::solana::keys::generate_private_key;
 use solana_sdk::signer::Signer;
 use crate::secrets::Secrets;
-use solana_sdk::transaction::Transaction;
 
 
 #[derive(Serialize)]
@@ -23,8 +22,8 @@ pub struct ReturnSponsor {
     background_url: String,
     public_key: String,
     token_mint: String,
-    original_tokens: i32,
-    available_tokens: i32,
+    original_tokens: i64,
+    available_tokens: i64,
     reward_tokens: i32,
     challenge_text: String,
     challenge_time: i32,
