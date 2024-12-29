@@ -103,6 +103,7 @@ async fn main() {
         .route("/api/attempts", get(api::attempt_list::attempt_list))
         .route("/api/launchpad", post(api::launchpad::launchpad))
         .route("/api/payment", post(api::payment::payment))
+        .route("/api/verify-winner", post(api::verify_winner::verify_winner))
         .route(
             "/redirect-gather/*path",
             post(game::gather::redirect_gather_handler),
