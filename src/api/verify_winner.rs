@@ -14,8 +14,8 @@ pub struct WinnerRequest {
 
 #[derive(Serialize)]
 pub struct WinnerResponse {
-    is_winner: bool,
-    winner_url: String,
+    is_winner: Option<bool>,
+    winner_url: Option<String>,
 }
 
 
@@ -29,12 +29,12 @@ pub async fn verify_winner(
         .await
         .unwrap();
 
-    let is_winner = result.clone().unwrap().is_winner.unwrap();
+    let is_winner = result.clone().unwrap().is_winner;
     let winner_url = result.clone().unwrap().winner_url;
 
     let response = WinnerResponse {
-        is_winner,
-        winner_url,
+        is_winner: is_winner,
+        winner_url: Some(winner_url),
     };
 
     (StatusCode::OK, Json(response)).into_response()
