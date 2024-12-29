@@ -54,6 +54,8 @@ impl Database {
         .await?)
     }
 
+
+
     /// Creates a new winner in the database with the given name and sponsor ID.
     /// Uses a random UUID as the private key that the user can use to claim their reward.
     pub async fn create_winner(&self, name: String, sponsor_id: i32) -> Result<Winner> {
@@ -100,6 +102,23 @@ impl Database {
         )
         .fetch_optional(&self.pool)
         .await?)
+    }
+
+
+    pub async fn update_attempt_winner_url(&self, phone_number: String, winner_url: String) -> Result<()> {
+        sqlx::query!(
+            r#"
+                UPDATE attempts
+                SET winner_url = $1
+                WHERE phone_number = $2
+            "#,
+            winner_url,
+            phone_number
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
     }
 
 
@@ -232,7 +251,7 @@ impl Database {
 
 
     /// Creates a new attempt in the database.
-    pub async fn create_attempt_with_sponsor(&self, user: &User, sponsor: &Sponsor) -> Result<()> {
+    pub async fn create_attempt_with_sponsor(&self, user: &User, sponsor: &Sponsor, call_sid: String) -> Result<()> {
         sqlx::query!(
             r#"
                 INSERT INTO attempts (
@@ -243,10 +262,11 @@ impl Database {
                 sponsor_total_reward,
                 sponsor_attempt_reward,
                 sponsor_background_url,
-                sponsor_challenge_time
+                sponsor_challenge_time,
+                call_sid
             )
                 VALUES (
-                    $1, $2, $3, $4, $5, $6, $7, $8
+                    $1, $2, $3, $4, $5, $6, $7, $8, $9
                 )
             "#,
             user.phone_number,
@@ -257,6 +277,7 @@ impl Database {
             sponsor.reward_tokens,
             sponsor.background_url,
             sponsor.challenge_time,
+            call_sid
         )
         .execute(&self.pool)
         .await?;
@@ -265,15 +286,16 @@ impl Database {
     }
 
 
-    pub async fn update_attempt_video(&self, caller_phone_number: String, video_url: String) -> Result<()> {
+    pub async fn update_attempt_video(&self, caller_phone_number: String, video_url: String, call_sid: String) -> Result<()> {
         sqlx::query!(
             r#"
                 UPDATE attempts
                 SET video_url = $1
-                WHERE phone_number = $2
+                WHERE phone_number = $2 AND call_sid = $3
             "#,
             video_url,
-            caller_phone_number
+            caller_phone_number,
+            call_sid
         )
         .execute(&self.pool)
         .await?;
@@ -281,15 +303,16 @@ impl Database {
         Ok(())
     }
 
-    pub async fn update_attempt_winner(&self, caller_phone_number: String, is_winner: bool) -> Result<()> {
+    pub async fn update_attempt_winner(&self, caller_phone_number: String, is_winner: bool, call_sid: String) -> Result<()> {
         sqlx::query!(
             r#"
                 UPDATE attempts
                 SET is_winner = $1
-                WHERE phone_number = $2
+                WHERE phone_number = $2 AND call_sid = $3
             "#,
             is_winner,
-            caller_phone_number
+            caller_phone_number,
+            call_sid
         )
         .execute(&self.pool)
         .await?;

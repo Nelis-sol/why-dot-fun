@@ -80,7 +80,7 @@ pub async fn start_handler(
 
             // Create the attempt in the database
             database
-                .create_attempt_with_sponsor(&user, &sponsor)
+                .create_attempt_with_sponsor(&user, &sponsor, call.sid.clone())
                 .await
                 .expect("Failed to create attempt");
 

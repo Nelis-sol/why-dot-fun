@@ -51,7 +51,9 @@ CREATE TABLE IF NOT EXISTS attempts (
 	sponsor_background_url TEXT,
 	sponsor_challenge_time INT,
 	challenge_transcript TEXT, -- TODO: add challenge_transcript
-	challenge_status TEXT -- TODO: add challenge_status
+	challenge_status TEXT, -- TODO: add challenge_status
+	winner_url TEXT,
+	call_sid TEXT
 );
 
 

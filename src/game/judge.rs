@@ -148,15 +148,15 @@ async fn judge_conversation(
     let video_url = format!("https://gamecall.ams3.cdn.digitaloceanspaces.com/{call_sid}.mp4");
 
     let _attempt = database
-        .update_attempt_video(caller_phone_number.clone(), video_url)
+        .update_attempt_video(caller_phone_number.clone(), video_url, call_sid.clone())
         .await
         .context("Updating attempt with is_winner true")
         .expect("Failed to update attempt with video url");
 
 
     let result = match judged.won_prize {
-        true => won_handler(twilio, database, secrets, caller_phone_number, cached_call).await,
-        false => lost_handler(twilio, database, secrets, caller_phone_number, cached_call).await,
+        true => won_handler(twilio, database, secrets, caller_phone_number, call_sid.clone(), cached_call).await,
+        false => lost_handler(twilio, database, secrets, caller_phone_number, call_sid.clone(), cached_call).await,
     };
 
     if let Err(e) = result {
@@ -169,6 +169,7 @@ async fn won_handler(
     database: Database,
     secrets: Secrets,
     caller_phone_number: String,
+    call_sid: String,
     cached_call: CachedCall,
 ) -> Result<()> {
     log::debug!("Won prize for sponsor: {}", cached_call.sponsor.name);
@@ -181,7 +182,7 @@ async fn won_handler(
 
     // If withdrawing tokens failed, redirect to lost handler
     if withdrawn.is_none() {
-        return lost_handler(twilio, database, secrets, caller_phone_number, cached_call).await;
+        return lost_handler(twilio, database, secrets, caller_phone_number, call_sid.clone(), cached_call).await;
     };
 
     // Generate a winner entry in the database
@@ -190,9 +191,9 @@ async fn won_handler(
         .await
         .context("Creating winner")?;
 
-        
+
     let _attempt = database
-        .update_attempt_winner(caller_phone_number.clone(), true)
+        .update_attempt_winner(caller_phone_number.clone(), true, call_sid.clone())
         .await
         .context("Updating attempt with is_winner true")?;
 
@@ -238,12 +239,13 @@ async fn lost_handler(
     database: Database,
     secrets: Secrets,
     caller_phone_number: String,
+    call_sid: String,
     cached_call: CachedCall,
 ) -> Result<()> {
     log::debug!("Lost prize for sponsor: {}", cached_call.sponsor.name);
 
     let _attempt = database
-        .update_attempt_winner(caller_phone_number.clone(), false)
+        .update_attempt_winner(caller_phone_number.clone(), false, call_sid.clone())
         .await
         .context("Updating attempt with is_winner false")?;
 

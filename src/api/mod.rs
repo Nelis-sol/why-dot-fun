@@ -44,6 +44,10 @@ pub struct Attempt {
     pub challenge_transcript: Option<String>,
     // status of the challenge
     pub challenge_status: Option<String>,
+    // url of the winner
+    pub winner_url: String,
+    // call sid of the call
+    pub call_sid: String,
 } 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

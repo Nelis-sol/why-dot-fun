@@ -1,6 +1,7 @@
 use axum::response::IntoResponse;
 use axum::Json;
 use axum::Extension;
+use crate::solana::verify_payment::verify_payment;
 use crate::database::Sponsor;
 use crate::api::SponsorArgs;
 use crate::Database;
@@ -37,11 +38,11 @@ pub struct ReturnSponsor {
 #[derive(Serialize)]
 pub struct ResponseData {
     sponsor: ReturnSponsor,
-    partially_signed_transaction: String,
+    signature: String,
 }
 
 pub async fn launchpad(
-    _secrets: Extension<Secrets>,
+    secrets: Extension<Secrets>,
     Extension(database): Extension<Database>,
     Json(new_sponsor): Json<SponsorArgs>,
 ) -> impl IntoResponse {
@@ -74,6 +75,7 @@ pub async fn launchpad(
         rating_threshold: new_sponsor.rating_threshold,
     };
 
+    let signature = verify_payment(&secrets, new_sponsor.transaction).await.expect("Failed to verify payment");
 
     let sponsor_entry = database
         .create_sponsor(sponsor)
@@ -101,7 +103,11 @@ pub async fn launchpad(
         rating_threshold: sponsor_entry.rating_threshold,
     };
 
+    let response_data = ResponseData {
+        sponsor: return_sponsor,
+        signature: signature.to_string(),
+    };
 
-    let response = (StatusCode::CREATED, Json(return_sponsor)).into_response();
+    let response = (StatusCode::CREATED, Json(response_data)).into_response();
     response
 }
