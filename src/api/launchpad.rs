@@ -10,6 +10,7 @@ use serde::Serialize;
 use crate::solana::keys::generate_private_key;
 use solana_sdk::signer::Signer;
 use crate::secrets::Secrets;
+use solana_sdk::transaction::Transaction;
 
 
 #[derive(Serialize)]
@@ -42,7 +43,7 @@ pub struct ResponseData {
 pub async fn launchpad(
     _secrets: Extension<Secrets>,
     Extension(database): Extension<Database>,
-    Json(new_sponsor): Json<SponsorArgs>
+    Json(new_sponsor): Json<SponsorArgs>,
 ) -> impl IntoResponse {
     let challenge: String = String::from("Thank you {name}! Lets start the game: ");
 

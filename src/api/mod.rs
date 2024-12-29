@@ -5,6 +5,8 @@ pub mod payment;
 
 use chrono::Utc;
 use serde::{Serialize, Deserialize};
+use solana_sdk::transaction::Transaction;
+
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Attempt {
@@ -57,4 +59,5 @@ pub struct SponsorArgs {
     pub system_instruction: String,
     pub challenge: String,
     pub rating_threshold: i32,
+    pub transaction: Transaction,
 }

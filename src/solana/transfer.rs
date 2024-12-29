@@ -23,14 +23,14 @@ pub async fn transfer_solana_token(
 
     // Initialize the RPC client
     let commitment_config = CommitmentConfig::confirmed();
-    let client = RpcClient::new_with_commitment(rpc_url.to_string(), commitment_config);
+    let rpc_client = RpcClient::new_with_commitment(rpc_url.to_string(), commitment_config);
 
     // Initialize accounts needed for the transfer
     let sender_keypair: Keypair = Keypair::from_base58_string(&sender_private_key);
 
     let token_mint: Pubkey = Pubkey::from_str(&token_mint).expect("Invalid token mint address");
 
-    let account_info = client.get_account(&token_mint).expect("Failed to fetch account info for token mint");
+    let account_info = rpc_client.get_account(&token_mint).expect("Failed to fetch account info for token mint");
     let token_program_id = account_info.owner;
 
     let sender_token_account = get_or_create_ata(
@@ -64,7 +64,6 @@ pub async fn transfer_solana_token(
     .expect("Failed to create transfer instruction");
     
 
-    let rpc_client = RpcClient::new(rpc_url);
 
     let modify_compute_units = ComputeBudgetInstruction::set_compute_unit_limit(30000);
     let set_priority_fee = ComputeBudgetInstruction::set_compute_unit_price(1000);

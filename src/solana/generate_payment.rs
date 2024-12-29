@@ -1,3 +1,4 @@
+use solana_sdk::signer::Signer;
 use solana_sdk::{
     signature::Keypair,
     transaction::Transaction,
@@ -51,7 +52,7 @@ pub async fn generate_payment(
             modify_compute_units, 
             set_priority_fee
         ],
-        Some(&sender_pubkey),
+        Some(&whydotfun_treasury_keypair.pubkey()),
     );
 
     // Create a partially signed transaction
