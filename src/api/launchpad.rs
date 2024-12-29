@@ -54,13 +54,13 @@ pub async fn launchpad(
 
     let sponsor = Sponsor {
         id: 1,
-        name: new_sponsor.name,
-        user_id: new_sponsor.user_id,
+        name: new_sponsor.name.trim().to_string(),
+        user_id: new_sponsor.user_id.trim().to_string(),
         active: true,
-        background_url: new_sponsor.background_url,
+        background_url: new_sponsor.background_url.trim().to_string(),
         private_key: private_key_base58,
         public_key: public_key.to_string(),
-        token_mint: new_sponsor.token_mint,
+        token_mint: new_sponsor.token_mint.trim().to_string(),
         original_tokens: new_sponsor.original_tokens,
         available_tokens: new_sponsor.available_tokens,
         reward_tokens: new_sponsor.reward_tokens,

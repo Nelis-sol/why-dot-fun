@@ -29,6 +29,7 @@ pub async fn verify_winner(
         .await
         .unwrap();
 
+
     let is_winner = result.clone().unwrap().is_winner;
     let winner_url = result.clone().unwrap().winner_url;
 

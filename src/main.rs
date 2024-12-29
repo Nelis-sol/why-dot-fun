@@ -17,6 +17,7 @@ use tower_http::cors::{Any, CorsLayer};
 use tower_http::services::ServeDir;
 use twilio::Client as TwilioClient;
 use twitter_v2::{authorization::Oauth1aToken, TwitterApi};
+use axum::Json;
 
 static_toml! { static CONFIG = include_toml!("Config.toml"); }
 
@@ -112,6 +113,7 @@ async fn main() {
         .nest_service("/claim", claim::router())
         .nest_service("/review", review::router())
         .nest_service("/static", ServeDir::new("static"))
+        .fallback(error_handler)
         .layer(cors)
         .layer(Extension(secrets))
         .layer(Extension(twilio))
@@ -130,4 +132,11 @@ async fn main() {
 
 pub async fn health_check() -> impl IntoResponse {
     StatusCode::OK
+}
+
+async fn error_handler() -> (StatusCode, Json<serde_json::Value>) {
+    (
+        StatusCode::GATEWAY_TIMEOUT,
+        Json(serde_json::json!({ "error": "Gateway Timeout" })),
+    )
 }
