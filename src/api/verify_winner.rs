@@ -7,13 +7,13 @@ use crate::StatusCode;
 
 
 #[derive(Deserialize)]
-struct WinnerRequest {
+pub struct WinnerRequest {
     phone_number: String,
 }
 
 
 #[derive(Serialize)]
-struct WinnerResponse {
+pub struct WinnerResponse {
     is_winner: bool,
     winner_url: String,
 }
