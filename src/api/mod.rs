@@ -51,6 +51,36 @@ pub struct Attempt {
     pub call_sid: String,
 } 
 
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AttemptReturn {
+    // attempt created at
+    pub created_at: chrono::DateTime<Utc>,
+    // attempt updated at
+    pub updated_at: chrono::DateTime<Utc>,
+    // video url of attempt
+    pub video_url: Option<String>,
+    // twitter url of attempt
+    pub twitter_url: Option<String>,
+    // is the attempt a winner
+    pub is_winner: Option<bool>,
+    // sponsored question / challenge
+    pub sponsor_question: Option<String>,
+    // name of the sponsor
+    pub sponsor_name: Option<String>,
+    // sponsored token mint
+    pub sponsor_token_mint: Option<String>,
+    // background url of the sponsor image or video
+    pub sponsor_background_url: Option<String>,
+    // time user has to complete the challenge
+    pub sponsor_challenge_time: Option<i32>,
+    // transcript of the challenge
+    pub challenge_transcript: Option<String>,
+    // status of the challenge
+    pub challenge_status: Option<String>,
+} 
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SponsorArgs {
     pub name: String,
