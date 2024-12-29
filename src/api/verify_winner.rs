@@ -2,8 +2,14 @@ use axum::response::IntoResponse;
 use axum::Json;
 use axum::Extension;
 use crate::Database;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use crate::StatusCode;
+
+
+#[derive(Deserialize)]
+struct WinnerRequest {
+    phone_number: String,
+}
 
 
 #[derive(Serialize)]
@@ -15,11 +21,11 @@ struct WinnerResponse {
 
 pub async fn verify_winner(
     Extension(database): Extension<Database>,
-    Json(phone_number): Json<String>,
+    Json(request): Json<WinnerRequest>,
 ) -> impl IntoResponse {
 
     let result = database
-        .get_attempt_result_by_phone_number(phone_number)
+        .get_attempt_result_by_phone_number(request.phone_number)
         .await
         .unwrap();
 
