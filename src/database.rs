@@ -310,6 +310,7 @@ pub struct WithdrawnTokens {
 pub struct Sponsor {
     pub id: i32,
     pub name: String,
+    pub user_id: String,
     pub active: bool,
     pub background_url: String,
     pub private_key: String,

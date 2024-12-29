@@ -45,6 +45,7 @@ pub struct Attempt {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SponsorArgs {
     pub name: String,
+    pub user_id: String,
     pub background_url: String,
     pub token_mint: String,
     pub original_tokens: i32,

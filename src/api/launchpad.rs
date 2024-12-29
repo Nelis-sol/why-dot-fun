@@ -14,6 +14,7 @@ use solana_sdk::signer::Signer;
 pub struct ReturnSponsor {
     id: i32,
     name: String,
+    user_id: String,
     active: bool,
     background_url: String,
     public_key: String,
@@ -43,6 +44,7 @@ pub async fn launchpad(
     let sponsor = Sponsor {
         id: 1,
         name: new_sponsor.name,
+        user_id: new_sponsor.user_id,
         active: true,
         background_url: new_sponsor.background_url,
         private_key: private_key_base58,
@@ -71,6 +73,7 @@ pub async fn launchpad(
     let return_sponsor = ReturnSponsor {
         id: sponsor_entry.id,
         name: sponsor_entry.name,
+        user_id: sponsor_entry.user_id,
         active: sponsor_entry.active,
         background_url: sponsor_entry.background_url,
         public_key: sponsor_entry.public_key,

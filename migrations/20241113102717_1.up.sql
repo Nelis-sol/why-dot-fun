@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS attempts (
 
 INSERT INTO sponsors (
 	name, 
+	user_id,
 	active, 
 	background_url, 
 	private_key,
@@ -76,6 +77,7 @@ INSERT INTO sponsors (
 )
 VALUES (
 	'CRAB', 
+	'publickey goes here',
 	true, 
 	'https://osco.digital/why-fun-crab-video.mp4',
 	'4ExCVAeqgmoUkuY7WnRwcwXfd6F7ZmHWDQeB7HC6gyAiMSsawS6tqg5Ci4a26Sb1f8MeSotMQhhxWJ5jLFhf1wTc', 
