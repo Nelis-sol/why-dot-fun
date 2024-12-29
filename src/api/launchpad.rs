@@ -24,7 +24,7 @@ pub struct ReturnSponsor {
     token_mint: String,
     original_tokens: i64,
     available_tokens: i64,
-    reward_tokens: i32,
+    reward_tokens: i64,
     challenge_text: String,
     challenge_time: i32,
     start_text: String,

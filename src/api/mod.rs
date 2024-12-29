@@ -36,7 +36,7 @@ pub struct Attempt {
     // sponsored total reward
     pub sponsor_total_reward: Option<i64>,
     // sponsored reward per attempt
-    pub sponsor_attempt_reward: Option<i32>,
+    pub sponsor_attempt_reward: Option<i64>,
     // background url of the sponsor image or video
     pub sponsor_background_url: Option<String>,
     // time user has to complete the challenge
@@ -59,7 +59,7 @@ pub struct SponsorArgs {
     pub token_mint: String,
     pub original_tokens: i64,
     pub available_tokens: i64,
-    pub reward_tokens: i32,
+    pub reward_tokens: i64,
     pub challenge_time: i32,
     pub system_instruction: String,
     pub challenge: String,

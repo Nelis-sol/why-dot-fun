@@ -347,7 +347,7 @@ impl Database {
 #[allow(unused)]
 #[derive(Debug, Clone)]
 pub struct WithdrawnTokens {
-    pub amount: i32,
+    pub amount: i64,
 }
 
 #[allow(unused)]
@@ -363,7 +363,7 @@ pub struct Sponsor {
     pub token_mint: String,
     pub original_tokens: i64,
     pub available_tokens: i64,
-    pub reward_tokens: i32,
+    pub reward_tokens: i64,
     pub challenge_time: i32,
     pub system_instruction: String,
     pub greeting_text: String,
