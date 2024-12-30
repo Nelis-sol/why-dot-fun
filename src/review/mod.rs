@@ -66,10 +66,6 @@ async fn approve_draft(
     draft: Form<Draft>,
 ) -> Redirect {
 
-
-    // TODO: upload to Shadow Drive
-
-
     log::debug!("Approving draft {}", draft.call_sid);
     let media_id = match twitter::upload_video(&reqwest, &secrets, &draft).await {
         Ok(media_id) => media_id,

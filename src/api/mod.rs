@@ -54,6 +54,7 @@ pub struct Attempt {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AttemptReturn {
+    pub id: i32,
     // attempt created at
     pub created_at: chrono::DateTime<Utc>,
     // attempt updated at

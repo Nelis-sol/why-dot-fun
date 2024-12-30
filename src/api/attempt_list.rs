@@ -3,12 +3,12 @@ use axum::Json;
 use crate::api::{Attempt, AttemptReturn};
 use axum::Extension;
 use crate::Database;
-use serde::Serialize;
 
 // Implement the From trait for AttemptReturn
 impl From<Attempt> for AttemptReturn {
     fn from(attempt: Attempt) -> Self {
         AttemptReturn {
+            id: attempt.id,
             created_at: attempt.created_at,
             updated_at: attempt.updated_at,
             video_url: attempt.video_url,

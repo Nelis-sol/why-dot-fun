@@ -10,6 +10,8 @@ use serde::Deserialize;
 use std::{iter, time::Duration};
 use tokio::time::sleep;
 use twitter_v2::{authorization::Oauth1aToken, TwitterApi};
+use axum::Extension;
+use crate::database::Database;
 
 
 const CHUNK_SIZE: usize = 5 * 1024 * 1024;
