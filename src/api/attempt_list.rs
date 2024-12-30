@@ -35,6 +35,7 @@ pub async fn attempt_list(
         .unwrap_or(vec![])
         .into_iter()
         .map(AttemptReturn::from)
+        .filter(|attempt| attempt.video_url.as_ref().map_or(false, |url| !url.is_empty()))
         .collect();
 
     Json(attempt_list).into_response()
