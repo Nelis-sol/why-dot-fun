@@ -55,7 +55,7 @@ pub async fn launchpad(
         id: 1,
         name: new_sponsor.name.trim().to_string(),
         user_id: new_sponsor.user_id.trim().to_string(),
-        active: true,
+        active: false,
         background_url: new_sponsor.background_url.trim().to_string(),
         private_key: private_key_base58,
         public_key: public_key.to_string(),

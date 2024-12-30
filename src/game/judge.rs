@@ -137,12 +137,19 @@ async fn judge_conversation(
         judged.explanation
     );
 
+    let _attempt = database
+        .update_attempt_judgement(call_sid.clone(), judged.explanation)
+        .await
+        .context("Updating attempt with judgement")
+        .expect("Failed to update attempt with judgement");
+
     tokio::spawn(render_video(
         reqwest,
         secrets.clone(),
         call_sid.clone(),
         cached_call.clone(),
         judged.rating,
+        database.clone(),
     ));
 
     let video_url = format!("https://gamecall.ams3.cdn.digitaloceanspaces.com/{call_sid}.mp4");

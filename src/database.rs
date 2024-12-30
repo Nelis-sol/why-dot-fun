@@ -53,6 +53,7 @@ impl Database {
         .fetch_one(&self.pool)
         .await?)
     }
+    
 
 
 
@@ -99,6 +100,21 @@ impl Database {
                 WHERE pubkey = $1
             "#,
             public_key
+        )
+        .fetch_optional(&self.pool)
+        .await?)
+    }
+
+        /// Gets the winner with the given key from the database.
+    /// Returns `None` if there is no winner with the given key.
+    pub async fn get_attempt_by_sid(&self, call_sid: String) -> Result<Option<Attempt>> {
+        Ok(sqlx::query_as!(
+            Attempt,
+            r#"
+                SELECT * FROM attempts
+                WHERE call_sid = $1
+            "#,
+            call_sid
         )
         .fetch_optional(&self.pool)
         .await?)
@@ -151,6 +167,23 @@ impl Database {
                 WHERE call_sid = $2
             "#,
             twitter_url,
+            call_sid
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
+
+    pub async fn update_attempt_judgement(&self, call_sid: String, judgement: String) -> Result<()> {
+        sqlx::query!(
+            r#"
+                UPDATE attempts
+                SET challenge_status = $1
+                WHERE call_sid = $2
+            "#,
+            judgement,
             call_sid
         )
         .execute(&self.pool)

@@ -10,6 +10,8 @@ use aws_config::Region;
 use aws_credential_types::Credentials;
 use aws_sdk_s3::Client;
 use aws_sdk_s3::types::ObjectCannedAcl;
+use axum::Extension;
+use crate::Database;
 
 mod background;
 mod ffmpeg;
@@ -21,6 +23,7 @@ pub async fn render_video(
     call_sid: String,
     cached_call: CachedCall,
     rating: u8,
+    database: Database,
 ) {
     // Ensure the necessary directories exist
     let _ = tokio::fs::create_dir_all(format!("cache/recordings/{call_sid}")).await;
@@ -55,8 +58,14 @@ pub async fn render_video(
         false => download_background_video(reqwest, &cached_call, &call_sid).await,
     };
 
+    let attempt = database
+        .get_attempt_by_sid(call_sid.clone())
+        .await
+        .expect("Failed to get attempt by sid")
+        .expect("Attempt not found");
+
     // Store the comment for the reviewer
-    let comment = format!("Sponsored by {}", cached_call.sponsor.name);
+    let comment = format!("{} Sponsored by {}.", attempt.challenge_status.unwrap_or("".to_string()), cached_call.sponsor.name);
     tokio::fs::write(&comment_path, comment)
         .await
         .expect("Failed to write comment");
