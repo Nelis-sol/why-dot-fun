@@ -125,15 +125,33 @@ impl Database {
 
 
 
-    pub async fn update_attempt_winner_url(&self, phone_number: String, winner_url: String) -> Result<()> {
+    pub async fn update_attempt_winner_url(&self, phone_number: String, winner_url: String, call_sid: String) -> Result<()> {
         sqlx::query!(
             r#"
                 UPDATE attempts
                 SET winner_url = $1
-                WHERE phone_number = $2
+                WHERE phone_number = $2 AND call_sid = $3
             "#,
             winner_url,
-            phone_number
+            phone_number,
+            call_sid
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
+
+    pub async fn update_attempt_twitter_url(&self, twitter_url: String, call_sid: String) -> Result<()> {
+        sqlx::query!(
+            r#"
+                UPDATE attempts
+                SET twitter_url = $1
+                WHERE call_sid = $2
+            "#,
+            twitter_url,
+            call_sid
         )
         .execute(&self.pool)
         .await?;

@@ -46,12 +46,19 @@ pub async fn post_tweet(
     media_id: u64,
     draft: &Draft,
 ) -> Result<()> {
-    twitter
+    let tweet_object = twitter
         .post_tweet()
         .text(draft.comment.to_owned())
         .add_media(iter::once(media_id), iter::empty::<u64>())
         .send()
         .await?;
+
+    println!("tweet url: {}", tweet_object.url());
+
+    dotenv::dotenv().ok();
+    let secrets = Secrets::from_env();
+    let database = Database::new(&secrets).await;
+    database.update_attempt_twitter_url(tweet_object.url().to_string(), draft.call_sid.clone()).await?;
 
     Ok(())
 }
