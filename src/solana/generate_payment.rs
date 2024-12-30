@@ -27,8 +27,6 @@ pub async fn generate_payment(
     let sender_pubkey: Pubkey = Pubkey::from_str(&sender_pubkey).expect("Invalid sender pubkey address");
     let receiver_pubkey: Pubkey = Pubkey::from_str(&secrets.treasury_public_key).expect("Invalid receiver pubkey address");
 
-    let amount_to_transfer: u64 = amount * 1000000000;
-
     let signer_private_key = &secrets.treasury_private_key;
 
     let whydotfun_treasury_keypair = Keypair::from_base58_string(signer_private_key);
@@ -37,7 +35,7 @@ pub async fn generate_payment(
     let transfer_sol_ix = system_instruction::transfer(
         &sender_pubkey,
         &receiver_pubkey,
-        amount_to_transfer,
+        amount,
     );
 
     let modify_compute_units = ComputeBudgetInstruction::set_compute_unit_limit(10000);
