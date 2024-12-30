@@ -5,6 +5,8 @@ use crate::StatusCode;
 use serde::{Serialize, Deserialize};
 use crate::secrets::Secrets;
 use crate::solana::generate_payment::generate_payment;
+use base64::{engine::general_purpose, Engine as _};
+use bincode;
 
 
 #[derive(Serialize, Deserialize)]
@@ -29,9 +31,12 @@ pub async fn payment(
     ).await
     .unwrap();
 
+    let serialized_transaction = bincode::serialize(&transaction).expect("Failed to serialize transaction");
+    let encoded_transaction = general_purpose::STANDARD.encode(serialized_transaction);
+
     let response = (
         StatusCode::OK, 
-        Json(transaction)
+        Json(encoded_transaction)
     ).into_response();
 
     response

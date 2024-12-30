@@ -2345,6 +2345,8 @@ dependencies = [
  "axum",
  "axum-auth",
  "axum-extra",
+ "base64 0.22.1",
+ "bincode",
  "chrono",
  "dotenv",
  "env_logger",
