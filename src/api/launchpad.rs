@@ -11,6 +11,9 @@ use serde::Serialize;
 use crate::solana::keys::generate_private_key;
 use solana_sdk::signer::Signer;
 use crate::secrets::Secrets;
+use base64::{engine::general_purpose, Engine as _};
+use bincode;
+use solana_sdk::transaction::Transaction;
 
 
 #[derive(Serialize)]
@@ -47,6 +50,8 @@ pub async fn launchpad(
 ) -> impl IntoResponse {
     let challenge: String = String::from("Thank you {name}! Lets start the game: ");
 
+    
+
     let private_key = generate_private_key();
     let public_key = private_key.pubkey().to_string();
     let private_key_base58 = private_key.to_base58_string();
@@ -68,13 +73,22 @@ pub async fn launchpad(
         greeting_text: "Welcome to Why dot Fun. Please tell me your name to start the game.".to_string(),
         challenge_text: new_sponsor.challenge.clone(),
         start_text: format!("{} {}", challenge, new_sponsor.challenge),
-        end_text: "Alright, your time is up! Thank you for participating. You will receive a text message with the results of you attempt. Thank you for playing today!".to_string(),
-        won_text: "Congratulations, you won! Claim you prize: https://www.why.fun/crab?winner=SdfIjwfdsoBYNOUufd".to_string(),
-        lost_text: "Unfortunately, you lost the game. Better luck next time!".to_string(),
+        end_text: "Alright, your time is up! Thank you for participating. You will receive a text message with the results of your attempt. If you are calling from the United States, visit claim.why.fun to check your result. Callers from the US will not receive a text message, please check your result on claim.why.fun. Thank you for playing today!".to_string(),
+        won_text: "Congratulations {name}, you won! Claim your prize: {link}".to_string(),
+        lost_text: "Unfortunately, you did not win this time. Better luck next time! Check out https://x.com/whydotfun for tips and tricks to improve your chances.".to_string(),
         rating_threshold: new_sponsor.rating_threshold,
     };
 
-    let signature = verify_payment(&secrets, new_sponsor.transaction).await.expect("Failed to verify payment");
+    // Decode the base64-encoded transaction
+    let decoded_transaction = general_purpose::STANDARD
+        .decode(&new_sponsor.transaction)
+        .expect("Failed to decode transaction");
+
+    // Deserialize the transaction
+    let transaction: Transaction = bincode::deserialize(&decoded_transaction)
+        .expect("Failed to deserialize transaction");
+
+    let signature = verify_payment(&secrets, transaction).await.expect("Failed to verify payment");
 
     let sponsor_entry = database
         .create_sponsor(sponsor)
