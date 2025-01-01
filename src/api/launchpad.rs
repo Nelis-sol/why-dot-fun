@@ -14,34 +14,30 @@ use crate::secrets::Secrets;
 use base64::{engine::general_purpose, Engine as _};
 use bincode;
 use solana_sdk::transaction::Transaction;
+use crate::api::ResponseData;
 
 
 #[derive(Serialize)]
 pub struct ReturnSponsor {
-    id: i32,
-    name: String,
-    user_id: String,
-    active: bool,
-    background_url: String,
-    public_key: String,
-    token_mint: String,
-    original_tokens: i64,
-    available_tokens: i64,
-    reward_tokens: i64,
-    challenge_text: String,
-    challenge_time: i32,
-    start_text: String,
-    system_instruction: String,
-    won_text: String,
-    lost_text: String,
-    rating_threshold: i32,
+    pub id: i32,
+    pub name: String,
+    pub user_id: String,
+    pub active: bool,
+    pub background_url: String,
+    pub public_key: String,
+    pub token_mint: String,
+    pub original_tokens: i64,
+    pub available_tokens: i64,
+    pub reward_tokens: i64,
+    pub challenge_text: String,
+    pub challenge_time: i32,
+    pub start_text: String,
+    pub system_instruction: String,
+    pub won_text: String,
+    pub lost_text: String,
+    pub rating_threshold: i32,
 }
 
-#[derive(Serialize)]
-pub struct ResponseData {
-    sponsor: ReturnSponsor,
-    signature: String,
-}
 
 pub async fn launchpad(
     secrets: Extension<Secrets>,
@@ -49,8 +45,6 @@ pub async fn launchpad(
     Json(new_sponsor): Json<SponsorArgs>,
 ) -> impl IntoResponse {
     let challenge: String = String::from("Thank you {name}! Lets start the game: ");
-
-    
 
     let private_key = generate_private_key();
     let public_key = private_key.pubkey().to_string();

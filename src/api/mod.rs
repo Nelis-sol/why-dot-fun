@@ -4,9 +4,11 @@ pub mod launchpad;
 pub mod payment;
 pub mod verify_winner;
 pub mod deposit;
+pub mod activate_sponsor;
 
 use chrono::Utc;
 use serde::{Serialize, Deserialize};
+use crate::api::launchpad::ReturnSponsor;
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -96,4 +98,10 @@ pub struct SponsorArgs {
     pub challenge: String,
     pub rating_threshold: i32,
     pub transaction: String,
+}
+
+#[derive(Serialize)]
+pub struct ResponseData {
+    sponsor: ReturnSponsor,
+    signature: String,
 }

@@ -105,6 +105,7 @@ async fn main() {
         .route("/api/launchpad", post(api::launchpad::launchpad))
         .route("/api/payment", post(api::payment::payment))
         .route("/api/deposit", post(api::deposit::deposit))
+        .route("/api/activate-sponsor", post(api::activate_sponsor::activate_sponsor))
         .route("/api/verify-winner", post(api::verify_winner::verify_winner))
         .route(
             "/redirect-gather/*path",

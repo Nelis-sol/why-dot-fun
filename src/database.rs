@@ -335,6 +335,21 @@ impl Database {
         .await?)
     }
 
+    pub async fn update_sponsor_to_active(&self, sponsor_public_key: String) -> Result<()> {
+        sqlx::query!(
+            r#"
+                UPDATE sponsors
+                SET active = true
+                WHERE public_key = $1
+            "#,
+            sponsor_public_key
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
 
     /// Creates a new attempt in the database.
     pub async fn create_attempt_with_sponsor(&self, user: &User, sponsor: &Sponsor, call_sid: String) -> Result<()> {
