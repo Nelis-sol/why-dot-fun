@@ -4,36 +4,37 @@ use axum::Extension;
 use crate::StatusCode;
 use serde::{Serialize, Deserialize};
 use crate::secrets::Secrets;
-use crate::solana::generate_payment::generate_payment;
+use crate::solana::generate_deposit::generate_deposit;
 use base64::{engine::general_purpose, Engine as _};
 use bincode;
+use crate::database::Database;
 
 
 #[derive(Serialize, Deserialize)]
 pub struct DepositArgs {
-    pub sender: String,
-    pub public_key: String,
-    pub amount: u64,
+    pub sender_public_key: String,
+    pub sponsor_public_key: String,
 }
 
 #[axum::debug_handler]
 pub async fn deposit(
     secrets: Extension<Secrets>,
+    Extension(database): Extension<Database>,
     Json(payment_args): Json<DepositArgs>
 ) -> impl IntoResponse {
 
-    let sender = payment_args.sender;
-    let public_key = payment_args.public_key;
-    let amount = payment_args.amount;
+    let sender_public_key = payment_args.sender_public_key;
+    let sponsor_public_key = payment_args.sponsor_public_key;
 
-    let transaction = generate_payment(
+    let deposit_transaction = generate_deposit(
         &secrets,
-        sender, 
-        amount
+        &database,
+        sender_public_key,
+        sponsor_public_key
     ).await
     .unwrap();
 
-    let serialized_transaction = bincode::serialize(&transaction).expect("Failed to serialize transaction");
+    let serialized_transaction = bincode::serialize(&deposit_transaction).expect("Failed to serialize transaction");
     let encoded_transaction = general_purpose::STANDARD.encode(serialized_transaction);
 
     let response = (
