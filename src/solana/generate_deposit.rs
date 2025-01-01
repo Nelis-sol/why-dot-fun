@@ -70,8 +70,8 @@ pub async fn generate_deposit(
         &receiver_token_account,
         &sender_pubkey,
         &[&sender_pubkey],
-        sponsor.original_tokens,
-    );
+        sponsor.original_tokens as u64,
+    ).expect("Failed to create transfer instruction");
 
 
 
@@ -83,7 +83,7 @@ pub async fn generate_deposit(
     // Create a message from the instructions
     let message = Message::new(
         &[
-            transfer_sol_ix, 
+            transfer_ix, 
             modify_compute_units, 
             set_priority_fee
         ],
