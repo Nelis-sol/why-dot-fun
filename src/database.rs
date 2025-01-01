@@ -53,6 +53,21 @@ impl Database {
         .fetch_one(&self.pool)
         .await?)
     }
+
+
+    /// Gets the sponsor with the given ID from the database.
+    pub async fn get_sponsor_by_public_key(&self, public_key: String) -> Result<Sponsor> {
+        Ok(sqlx::query_as!(
+            Sponsor,
+            r#"
+                SELECT * FROM sponsors
+                WHERE public_key = $1
+            "#,
+            public_key
+        )
+        .fetch_one(&self.pool)
+        .await?)
+    }
     
 
 

@@ -116,8 +116,6 @@ pub async fn render_video(
         .await
         .map_err(|e| Error::new(e));
 
-    println!("Upload result: {:?}", result);
-
 
 }
 

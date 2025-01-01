@@ -3,10 +3,10 @@ pub mod attempt_single;
 pub mod launchpad;
 pub mod payment;
 pub mod verify_winner;
+pub mod deposit;
 
 use chrono::Utc;
 use serde::{Serialize, Deserialize};
-use solana_sdk::transaction::Transaction;
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
