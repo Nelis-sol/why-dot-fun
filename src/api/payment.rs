@@ -12,7 +12,6 @@ use bincode;
 #[derive(Serialize, Deserialize)]
 pub struct PaymentArgs {
     pub sender: String,
-    pub amount: u64,
 }
 
 #[axum::debug_handler]
@@ -22,7 +21,7 @@ pub async fn payment(
 ) -> impl IntoResponse {
 
     let sender = payment_args.sender;
-    let amount = payment_args.amount;
+    let amount = 2000000000;
 
     let transaction = generate_payment(
         &secrets,
