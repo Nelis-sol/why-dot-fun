@@ -38,8 +38,8 @@ pub async fn generate_payment(
         amount,
     );
 
-    let modify_compute_units = ComputeBudgetInstruction::set_compute_unit_limit(10000);
-    let set_priority_fee = ComputeBudgetInstruction::set_compute_unit_price(100);
+    let modify_compute_units = ComputeBudgetInstruction::set_compute_unit_limit(40000);
+    let set_priority_fee = ComputeBudgetInstruction::set_compute_unit_price(1000);
 
     let latest_blockhash = rpc_client.get_latest_blockhash()?;
     
