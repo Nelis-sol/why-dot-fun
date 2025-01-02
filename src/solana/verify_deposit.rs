@@ -16,15 +16,15 @@ pub async fn verify_deposit(
     let commitment_config = CommitmentConfig::confirmed();
     let rpc_client = RpcClient::new_with_commitment(&secrets.rpc_url, commitment_config);
 
-    let is_sponsor_in_account_list = transaction
-        .message
-        .account_keys
-        .iter()
-        .any(|key| key.to_string() == sponsor_public_key);
+    // let is_sponsor_in_account_list = transaction
+    //     .message
+    //     .account_keys
+    //     .iter()
+    //     .any(|key| key.to_string() == sponsor_public_key);
 
-    if !is_sponsor_in_account_list {
-        return Err("sponsor public key is not among the account keys".into());
-    }
+    // if !is_sponsor_in_account_list {
+    //     return Err("sponsor public key is not among the account keys".into());
+    // }
 
 
     let whydotfun_treasury: Pubkey = Pubkey::from_str(&secrets.treasury_public_key).expect("Invalid receiver pubkey address");
