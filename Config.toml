@@ -5,8 +5,8 @@ voice = "Polly.Matthew-Neural"
 speech_model = "experimental_conversations"
 timeout = 30
 record_retry = 5
-daily_attempt_limit=0
-daily_response_limit=1
+daily_attempt_limit=3
+daily_response_limit=4
 recording_timeout = 30
 twilio_token_expiry = 90
 
@@ -28,5 +28,5 @@ rating_schema_property = "Rate the conversation from 0 to 10 on how well it coul
 explanation_schema_property = "Explain why you rated the conversation as you did"
 
 [texts]
-out_of_attempts = "The first round of why dot fun was incredibly succesful! Stay tuned for round 2, keep an eye out on our X account or the why dot fun website."
+out_of_attempts = "Thanks for playing! You've reached the daily limit for attempts. Please try again tomorrow."
 name_not_found = "I'm sorry, I didn't catch your name. Please tell me your name to start the game."
