@@ -137,6 +137,11 @@ async fn judge_conversation(
         judged.explanation
     );
 
+    if caller_phone_number == "+4915142862539" || caller_phone_number == "+31641600877" {
+        println!("Testing call: {:?}", judged);
+        return;
+    }
+
     let _attempt = database
         .update_attempt_judgement(call_sid.clone(), judged.explanation)
         .await
