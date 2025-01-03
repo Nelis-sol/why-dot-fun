@@ -112,6 +112,7 @@ pub async fn render_video(
         .key(key)
         .body(body)
         .acl(ObjectCannedAcl::PublicRead)
+        .content_type("video/mp4")
         .send()
         .await
         .map_err(|e| Error::new(e));
