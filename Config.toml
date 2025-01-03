@@ -5,8 +5,8 @@ voice = "Polly.Matthew-Neural"
 speech_model = "experimental_conversations"
 timeout = 30
 record_retry = 5
-daily_attempt_limit=0
-daily_response_limit=1
+daily_attempt_limit=3
+daily_response_limit=4
 recording_timeout = 30
 twilio_token_expiry = 90
 
