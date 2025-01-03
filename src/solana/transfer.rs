@@ -50,7 +50,7 @@ pub async fn transfer_solana_token(
     ).await.expect("Failed to get or create receiver token account");
 
 
-    let amount_to_transfer: u64 = amount * 1000000000;
+    // let amount_to_transfer: u64 = amount * 1000000000;
 
     // Create the transfer instruction
     let transfer_ix = transfer(
@@ -59,7 +59,8 @@ pub async fn transfer_solana_token(
         &receiver_token_account,
         &sender_keypair.pubkey(),
         &[&sender_keypair.pubkey()],
-        amount_to_transfer,
+        amount
+        // amount_to_transfer,
     )
     .expect("Failed to create transfer instruction");
     
