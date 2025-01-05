@@ -227,6 +227,12 @@ async fn won_handler(
     let link = format!("https://claim.why.fun/?key={}", receiver_private_key.to_base58_string());
     println!("user: {}, link: {}", caller_phone_number, link);
 
+    database.update_attempt_winner_url(
+        caller_phone_number.clone(), 
+        link.clone(), 
+        call_sid.clone()
+    ).await.context("Updating attempt with winner url")?;
+
     // Generate the winning text
     let text = cached_call
         .sponsor
