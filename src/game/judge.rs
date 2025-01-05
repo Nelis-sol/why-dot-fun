@@ -15,6 +15,7 @@ use twilio::{twiml::Twiml, Call, Client as TwilioClient, OutboundMessage};
 use crate::solana::transfer::transfer_solana_token;
 use crate::solana::keys::generate_private_key;
 use solana_sdk::signature::Signer;
+use crate::review::Draft;
 
 
 pub async fn judge_handler(
@@ -131,6 +132,7 @@ async fn judge_conversation(
     let judged: JudgeResponse =
         serde_json::from_str(&content).expect("Failed to judge conversation");
 
+
     log::debug!(
         "Judged conversation a {}/10 with explanation: {}",
         judged.rating,
@@ -143,13 +145,13 @@ async fn judge_conversation(
     // }
 
     let _attempt = database
-        .update_attempt_judgement(call_sid.clone(), judged.explanation)
+        .update_attempt_judgement(call_sid.clone(), judged.explanation.clone())
         .await
         .context("Updating attempt with judgement")
         .expect("Failed to update attempt with judgement");
 
     tokio::spawn(render_video(
-        reqwest,
+        reqwest.clone(),
         secrets.clone(),
         call_sid.clone(),
         cached_call.clone(),
@@ -160,14 +162,37 @@ async fn judge_conversation(
     let video_url = format!("https://gamecall.ams3.cdn.digitaloceanspaces.com/{call_sid}.mp4");
 
     let _attempt = database
-        .update_attempt_video(caller_phone_number.clone(), video_url, call_sid.clone())
+        .update_attempt_video(caller_phone_number.clone(), video_url.clone(), call_sid.clone())
         .await
         .context("Updating attempt with is_winner true")
         .expect("Failed to update attempt with video url");
 
 
+    // Create a form with the draft
+    let form = reqwest::multipart::Form::new()
+        .text("call_sid", call_sid.clone())
+        .text("comment", judged.explanation.clone());
+
+    // Make the HTTP POST request to the approve_draft endpoint with the form
+    let response = reqwest.post("https://gamecall-jvp99.ondigitalocean.app/review/approve")
+        .multipart(form)
+        .send()
+        .await;
+
+    match response {
+        Ok(resp) if resp.status().is_success() => {
+            log::debug!("Draft approved successfully");
+        }
+        Ok(resp) => {
+            log::error!("Failed to approve draft: {:?}", resp.text().await);
+        }
+        Err(e) => {
+            log::error!("Error making request to approve draft: {:?}", e);
+        }
+    }
+
     let result = match judged.won_prize {
-        true => won_handler(twilio, database, secrets, caller_phone_number, call_sid.clone(), cached_call).await,
+        true => won_handler(twilio, database, secrets, caller_phone_number, call_sid.clone(), cached_call, video_url).await,
         false => lost_handler(twilio, database, secrets, caller_phone_number, call_sid.clone(), cached_call).await,
     };
 
@@ -183,6 +208,7 @@ async fn won_handler(
     caller_phone_number: String,
     call_sid: String,
     cached_call: CachedCall,
+    video_url: String,
 ) -> Result<()> {
     log::debug!("Won prize for sponsor: {}", cached_call.sponsor.name);
 
@@ -238,7 +264,8 @@ async fn won_handler(
         .sponsor
         .won_text
         .replace("{name}", &cached_call.name)
-        .replace("{link}", &link);
+        .replace("{link}", &link)
+        .replace("{video_url}", &video_url);
 
     twilio
         .send_message(OutboundMessage {

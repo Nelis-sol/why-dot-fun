@@ -68,7 +68,7 @@ pub async fn launchpad(
         challenge_text: new_sponsor.challenge.clone(),
         start_text: format!("{} {}", challenge, new_sponsor.challenge),
         end_text: "Alright, your time is up! Thank you for participating. You will receive a text message with the results of your attempt. If you are calling from the United States, visit claim.why.fun to check your result. Callers from the US will not receive a text message, please check your result on claim.why.fun. Thank you for playing today!".to_string(),
-        won_text: "Congratulations {name}, you won! Claim your prize: {link}".to_string(),
+        won_text: "Congratulations {name}, you won! Claim your prize: {link}. View the video of your attempt here: {video_url} (it will be ready in around 15 minutes)".to_string(),
         lost_text: "Unfortunately, you did not win this time. Better luck next time! Check out https://x.com/whydotfun for tips and tricks to improve your chances.".to_string(),
         rating_threshold: new_sponsor.rating_threshold,
     };

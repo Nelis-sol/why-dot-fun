@@ -116,6 +116,6 @@ pub struct DraftTemplate {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Draft {
-    call_sid: String,
-    comment: String,
+    pub call_sid: String,
+    pub comment: String,
 }

@@ -10,7 +10,6 @@ use serde::Deserialize;
 use std::{iter, time::Duration};
 use tokio::time::sleep;
 use twitter_v2::{authorization::Oauth1aToken, TwitterApi};
-use axum::Extension;
 use crate::database::Database;
 
 
