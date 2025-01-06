@@ -21,7 +21,7 @@ pub async fn payment(
 ) -> impl IntoResponse {
 
     let sender = payment_args.sender;
-    let amount = 2000000000;
+    let amount = 1000000000;
 
     let transaction = generate_payment(
         &secrets,
