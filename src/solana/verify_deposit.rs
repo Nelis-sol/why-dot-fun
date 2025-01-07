@@ -5,6 +5,8 @@ use solana_sdk::signature::Signature;
 use crate::Secrets;
 use solana_sdk::pubkey::Pubkey;
 use std::str::FromStr;
+use crate::Database;
+
 
 pub async fn verify_deposit(
     secrets: &Secrets,

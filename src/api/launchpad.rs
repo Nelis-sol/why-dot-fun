@@ -60,7 +60,7 @@ pub async fn launchpad(
         public_key: public_key.to_string(),
         token_mint: new_sponsor.token_mint.trim().to_string(),
         original_tokens: new_sponsor.original_tokens,
-        available_tokens: new_sponsor.available_tokens,
+        available_tokens: new_sponsor.original_tokens,
         reward_tokens: new_sponsor.reward_tokens,
         challenge_time: new_sponsor.challenge_time,
         system_instruction: new_sponsor.system_instruction,
