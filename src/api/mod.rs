@@ -5,6 +5,7 @@ pub mod payment;
 pub mod verify_winner;
 pub mod deposit;
 pub mod activate_sponsor;
+pub mod sponsor_list;
 
 use chrono::Utc;
 use serde::{Serialize, Deserialize};

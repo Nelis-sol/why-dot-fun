@@ -68,7 +68,20 @@ impl Database {
         .fetch_one(&self.pool)
         .await?)
     }
-    
+
+    /// Gets the sponsor with the given ID from the database.
+    pub async fn get_sponsor_by_user_id(&self, user_id: String) -> Result<Vec<Sponsor>> {
+        Ok(sqlx::query_as!(
+            Sponsor,
+            r#"
+                SELECT * FROM sponsors
+                WHERE user_id = $1
+            "#,
+            user_id
+        )
+        .fetch_all(&self.pool)
+        .await?)
+    }
 
 
 

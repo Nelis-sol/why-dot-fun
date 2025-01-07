@@ -75,7 +75,8 @@ INSERT INTO sponsors (
 	end_text,
 	won_text,
 	lost_text,
-	rating_threshold
+	rating_threshold,
+	creator
 )
 VALUES (
 	'CRAB', 
@@ -95,7 +96,8 @@ VALUES (
 	'Alright, your time is up! Thank you for participating. You will receive a text message with the results of you attempt. Thank you for playing today!',
 	'Congratulations {name}, you won! Claim your prize: {link}',
 	'Unfortunately, you did not win this time. Better luck next time! Check out https://why.fun for tips and tricks to improve your chances.',
-	0
+	0,
+	'publickey goes here'
 );
 
 
