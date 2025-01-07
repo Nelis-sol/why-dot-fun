@@ -7,7 +7,7 @@ use serde::Deserialize;
 use solana_sdk::signature::{Signature, Signer};
 use solana_sdk::pubkey::Pubkey;
 use std::str::FromStr;
-use chrono::Timelike;
+use crate::StatusCode;
 
 
 #[derive(Deserialize, Clone, Debug)]
@@ -34,7 +34,7 @@ pub async fn sponsor_list(
 
     // Verify the signature
     if !signature.verify(&public_key.to_bytes(), message.as_bytes()) {
-        return Json("Invalid signature").into_response();
+        return (StatusCode::BAD_REQUEST, Json("Invalid signature")).into_response();
     }
 
     let sponsor_list = database
@@ -42,5 +42,6 @@ pub async fn sponsor_list(
         .await
         .expect("Failed to get sponsor");
 
-    Json(sponsor_list).into_response()
+
+    (StatusCode::OK).into_response()
 }
