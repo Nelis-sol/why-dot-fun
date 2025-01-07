@@ -20,6 +20,7 @@ pub async fn sponsor_list(
     Extension(database): Extension<Database>,
     Json(request): Json<SponsorListArgs>,
 ) -> impl IntoResponse {
+    println!("sponsor list request: {:?}", request.clone());
 
     let signature = request.signature;
     let public_key = request.public_key;
@@ -28,10 +29,11 @@ pub async fn sponsor_list(
     let signature = Signature::from_str(&signature).expect("Invalid signature format");
     let public_key = Pubkey::from_str(&public_key).expect("Invalid public key format");
 
-    let current_hour = chrono::Utc::now().format("%Y-%m-%d %H:00:00").to_string();
+    let message = chrono::Utc::now().format("%Y-%m-%d %H:00:00").to_string();
+    println!("message: {}", message);
 
     // Verify the signature
-    if !signature.verify(&public_key.to_bytes(), current_hour.as_bytes()) {
+    if !signature.verify(&public_key.to_bytes(), message.as_bytes()) {
         return Json("Invalid signature").into_response();
     }
 

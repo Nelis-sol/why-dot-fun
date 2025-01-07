@@ -25,6 +25,8 @@ pub async fn update_sponsor(
     Json(request): Json<SponsorArgs>,
 ) -> impl IntoResponse {
 
+    println!("update sponsor request: {:?}", request.clone());
+
     let signature = request.transaction;
     let public_key = request.user_id;
 
@@ -32,18 +34,13 @@ pub async fn update_sponsor(
     let signature = Signature::from_str(&signature).expect("Invalid signature format");
     let public_key = Pubkey::from_str(&public_key).expect("Invalid public key format");
 
-    let current_hour = chrono::Utc::now().format("%Y-%m-%d %H:00:00").to_string();
-    println!("current_hour: {}", current_hour);
+    let message = chrono::Utc::now().format("%Y-%m-%d %H:00:00").to_string();
+    println!("current_hour: {}", message);
 
     // Verify the signature
-    if !signature.verify(&public_key.to_bytes(), current_hour.as_bytes()) {
+    if !signature.verify(&public_key.to_bytes(), message.as_bytes()) {
         return (StatusCode::BAD_REQUEST, Json("Invalid signature")).into_response();
     }
 
-    let sponsor_list = database
-        .get_sponsor_by_user_id(public_key.to_string())
-        .await
-        .expect("Failed to get sponsor");
-
-    (StatusCode::OK, Json(sponsor_list)).into_response()
+    (StatusCode::OK).into_response()
 }
