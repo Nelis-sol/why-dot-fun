@@ -99,6 +99,7 @@ async fn main() {
         .route("/recording", post(game::recording::recording_handler))
         .route("/api/attempts/:id", get(api::attempt_single::attempt_single))
         .route("/api/sponsors", post(api::sponsor_list::sponsor_list))
+        .route("/api/sponsor/update", post(api::update_sponsor::update_sponsor))
         .route("/api/attempts", get(api::attempt_list::attempt_list))
         .route("/api/launchpad", post(api::launchpad::launchpad))
         .route("/api/payment", post(api::payment::payment))

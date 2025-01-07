@@ -9,6 +9,8 @@ use solana_sdk::pubkey::Pubkey;
 use std::str::FromStr;
 use crate::database::Sponsor;
 
+use super::SponsorArgs;
+
 
 #[derive(Deserialize)]
 pub struct UpdateSponsorArgs {
@@ -19,11 +21,11 @@ pub struct UpdateSponsorArgs {
 
 pub async fn update_sponsor(
     Extension(database): Extension<Database>,
-    Json(request): Json<SponsorListArgs>,
+    Json(request): Json<SponsorArgs>,
 ) -> impl IntoResponse {
 
-    let signature = request.signature;
-    let public_key = request.public_key;
+    let signature = request.transaction;
+    let public_key = request.user_id;
 
     // Convert the signature and public key from strings to their respective types
     let signature = Signature::from_str(&signature).expect("Invalid signature format");
