@@ -42,6 +42,6 @@ pub async fn sponsor_list(
         .await
         .expect("Failed to get sponsor");
 
-
-    (StatusCode::OK).into_response()
+        
+    (StatusCode::OK, Json(sponsor_list)).into_response()
 }
