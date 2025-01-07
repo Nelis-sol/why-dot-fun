@@ -10,7 +10,7 @@ use std::str::FromStr;
 use chrono::Timelike;
 
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct SponsorListArgs {
     public_key: String,
     signature: String,
