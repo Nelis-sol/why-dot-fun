@@ -98,7 +98,7 @@ async fn main() {
         .route("/judge", post(game::judge::judge_handler))
         .route("/recording", post(game::recording::recording_handler))
         .route("/api/attempts/:id", get(api::attempt_single::attempt_single))
-        .route("/api/sponsors", get(api::sponsor_list::sponsor_list))
+        .route("/api/sponsors", post(api::sponsor_list::sponsor_list))
         .route("/api/attempts", get(api::attempt_list::attempt_list))
         .route("/api/launchpad", post(api::launchpad::launchpad))
         .route("/api/payment", post(api::payment::payment))
