@@ -8,6 +8,7 @@ use solana_sdk::signature::{Signature, Signer};
 use solana_sdk::pubkey::Pubkey;
 use std::str::FromStr;
 use crate::database::Sponsor;
+use crate::StatusCode;
 
 use super::SponsorArgs;
 
@@ -32,10 +33,11 @@ pub async fn update_sponsor(
     let public_key = Pubkey::from_str(&public_key).expect("Invalid public key format");
 
     let current_hour = chrono::Utc::now().format("%Y-%m-%d %H:00:00").to_string();
+    println!("current_hour: {}", current_hour);
 
     // Verify the signature
     if !signature.verify(&public_key.to_bytes(), current_hour.as_bytes()) {
-        return Json("Invalid signature").into_response();
+        return (StatusCode::BAD_REQUEST, Json("Invalid signature")).into_response();
     }
 
     let sponsor_list = database
@@ -43,5 +45,5 @@ pub async fn update_sponsor(
         .await
         .expect("Failed to get sponsor");
 
-    Json(sponsor_list).into_response()
+    (StatusCode::OK, Json(sponsor_list)).into_response()
 }
