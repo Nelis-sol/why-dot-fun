@@ -1,4 +1,4 @@
-use crate::secrets::Secrets;
+use crate::{api::update_sponsor::UpdateSponsorArgs, secrets::Secrets};
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use sqlx::{postgres::PgPoolOptions, PgPool};
@@ -361,6 +361,38 @@ impl Database {
         .await?;
 
         Ok(())
+    }
+
+
+    pub async fn update_sponsor(&self, update_sponsor: UpdateSponsorArgs) -> Result<Sponsor> {
+        Ok(sqlx::query_as!(
+            Sponsor,
+            r#"
+                UPDATE sponsors
+                SET name = $1, active = $2, background_url = $3, token_mint = $4, original_tokens = $5, available_tokens = $6, reward_tokens = $7, challenge_time = $8, system_instruction = $9, greeting_text = $10, start_text = $11, end_text = $12, won_text = $13, lost_text = $14, rating_threshold = $15, challenge_text = $16
+                WHERE public_key = $17
+                RETURNING *
+            "#,
+            update_sponsor.name,
+            update_sponsor.active,
+            update_sponsor.background_url,
+            update_sponsor.token_mint,
+            update_sponsor.original_tokens,
+            update_sponsor.available_tokens,
+            update_sponsor.reward_tokens,
+            update_sponsor.challenge_time,
+            update_sponsor.system_instruction,
+            update_sponsor.greeting_text,
+            update_sponsor.start_text,
+            update_sponsor.end_text,
+            update_sponsor.won_text,
+            update_sponsor.lost_text,
+            update_sponsor.rating_threshold,
+            update_sponsor.challenge_text,
+            update_sponsor.user_id
+        )
+        .fetch_one(&self.pool)
+        .await?)
     }
 
 
