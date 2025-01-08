@@ -82,6 +82,8 @@ pub async fn update_sponsor(
         challenge_time: sponsor_entry.challenge_time,
         system_instruction: sponsor_entry.system_instruction,
         start_text: sponsor_entry.start_text,
+        greeting_text: sponsor_entry.greeting_text,
+        end_text: sponsor_entry.end_text,
         won_text: sponsor_entry.won_text,
         lost_text: sponsor_entry.lost_text,
         rating_threshold: sponsor_entry.rating_threshold,

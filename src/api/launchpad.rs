@@ -35,6 +35,8 @@ pub struct ReturnSponsor {
     pub system_instruction: String,
     pub won_text: String,
     pub lost_text: String,
+    pub greeting_text: String,
+    pub end_text: String,
     pub rating_threshold: i32,
 }
 
@@ -107,6 +109,8 @@ pub async fn launchpad(
         start_text: sponsor_entry.start_text,
         won_text: sponsor_entry.won_text,
         lost_text: sponsor_entry.lost_text,
+        greeting_text: sponsor_entry.greeting_text,
+        end_text: sponsor_entry.end_text,
         rating_threshold: sponsor_entry.rating_threshold,
     };
 

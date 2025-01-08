@@ -62,6 +62,8 @@ pub async fn sponsor_list(
             start_text: sponsor.start_text,
             won_text: sponsor.won_text,
             lost_text: sponsor.lost_text,
+            greeting_text: sponsor.greeting_text,
+            end_text: sponsor.end_text,
             rating_threshold: sponsor.rating_threshold,
         }
     }).collect();
