@@ -17,7 +17,6 @@ pub struct UpdateSponsorArgs {
     pub name: String,
     pub active: bool,
     pub background_url: String,
-    pub token_mint: String,
     pub challenge_time: i32,
     pub system_instruction: String,
     pub greeting_text: String,
@@ -52,6 +51,15 @@ pub async fn update_sponsor(
     if !signature.verify(&public_key.to_bytes(), message.as_bytes()) {
         return (StatusCode::BAD_REQUEST, Json("Invalid signature")).into_response();
     }
+
+    let sponsor = database.get_sponsor_by_public_key(request.public_key.clone())
+        .await
+        .expect("Failed to get sponsor");
+
+    if request.active == true && (sponsor.available_tokens < sponsor.reward_tokens || sponsor.available_tokens <= 0) {
+        return (StatusCode::BAD_REQUEST, Json("Cannot activate agent, not enough (reward) tokens available")).into_response();
+    }
+
 
     let sponsor_entry = database.update_sponsor(request)
         .await

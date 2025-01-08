@@ -369,14 +369,13 @@ impl Database {
             Sponsor,
             r#"
                 UPDATE sponsors
-                SET name = $1, active = $2, background_url = $3, token_mint = $4, challenge_time = $5, system_instruction = $6, greeting_text = $7, start_text = $8, end_text = $9, won_text = $10, lost_text = $11, rating_threshold = $12, challenge_text = $13
-                WHERE public_key = $14
+                SET name = $1, active = $2, background_url = $3, challenge_time = $4, system_instruction = $5, greeting_text = $6, start_text = $7, end_text = $8, won_text = $9, lost_text = $10, rating_threshold = $11, challenge_text = $12
+                WHERE public_key = $13
                 RETURNING *
             "#,
             update_sponsor.name,
             update_sponsor.active,
             update_sponsor.background_url,
-            update_sponsor.token_mint,
             update_sponsor.challenge_time,
             update_sponsor.system_instruction,
             update_sponsor.greeting_text,
