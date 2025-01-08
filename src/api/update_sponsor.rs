@@ -52,7 +52,8 @@ pub async fn update_sponsor(
         return (StatusCode::BAD_REQUEST, Json("Invalid signature")).into_response();
     }
 
-    let sponsor = database.get_sponsor_by_public_key(request.public_key.clone())
+    let sponsor = database
+        .get_sponsor_by_public_key(request.public_key.clone())
         .await
         .expect("Failed to get sponsor");
 

@@ -385,7 +385,7 @@ impl Database {
             update_sponsor.lost_text,
             update_sponsor.rating_threshold,
             update_sponsor.challenge_text,
-            update_sponsor.user_id
+            update_sponsor.public_key
         )
         .fetch_one(&self.pool)
         .await?)
