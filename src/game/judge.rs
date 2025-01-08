@@ -241,7 +241,7 @@ async fn won_handler(
 
 
     let signature = transfer_solana_token(
-        secrets.rpc_url.clone(),
+        &secrets,
         cached_call.sponsor.private_key,
         receiver_public_key,
         cached_call.sponsor.token_mint,

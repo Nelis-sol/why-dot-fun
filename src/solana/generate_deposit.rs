@@ -51,7 +51,7 @@ pub async fn generate_deposit(
         &sender_pubkey, 
         &token_mint,
         &token_program_id,
-        secrets.clone().rpc_url
+        &secrets
     ).await.expect("Failed to get or create sender token account");
 
     let receiver_token_account = get_or_create_ata(
@@ -59,7 +59,7 @@ pub async fn generate_deposit(
         &receiver_pubkey, 
         &token_mint,
         &token_program_id,
-        secrets.clone().rpc_url
+        &secrets
     ).await.expect("Failed to get or create sender token account");
 
 

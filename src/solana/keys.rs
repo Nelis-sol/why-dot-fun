@@ -4,6 +4,9 @@ use solana_sdk::pubkey::Pubkey;
 use solana_sdk::signature::Keypair;
 use solana_sdk::signer::Signer;
 use solana_sdk::transaction::Transaction;
+use solana_sdk::commitment_config::CommitmentConfig;
+use crate::Secrets;
+
 
 pub fn generate_private_key() -> Keypair {
     log::debug!("Generate new Solana keypair");
@@ -31,9 +34,11 @@ pub async fn get_or_create_ata(
     wallet_address: &Pubkey,
     token_mint_address: &Pubkey,
     token_program_id: &Pubkey,
-    rpc_url: String,
+    secrets: &Secrets,
 ) -> Result<Pubkey, Box<dyn std::error::Error>> {
-    let rpc_client = RpcClient::new(rpc_url);
+
+    let commitment_config = CommitmentConfig::confirmed();
+    let rpc_client = RpcClient::new_with_commitment(&secrets.rpc_url, commitment_config);
 
     // Check if the associated token account already exists
     let ata_address = spl_associated_token_account::get_associated_token_address(
@@ -66,7 +71,7 @@ pub async fn get_or_create_ata(
         latest_blockhash,
     );
 
-    let signature = rpc_client.send_and_confirm_transaction_with_spinner(&transaction)?;
+    let signature = rpc_client.send_and_confirm_transaction(&transaction)?;
 
     println!("signature: {}", signature.to_string());
 

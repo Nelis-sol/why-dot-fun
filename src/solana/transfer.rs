@@ -10,10 +10,11 @@ use std::str::FromStr;
 use crate::solana::keys::get_or_create_ata;
 use solana_sdk::compute_budget::ComputeBudgetInstruction;
 use solana_sdk::signature::Signature;
+use crate::Secrets;
 
 
 pub async fn transfer_solana_token(
-    rpc_url: String,
+    secrets: &Secrets,
     sender_private_key: String, 
     receiver_pubkey: Pubkey, 
     token_mint: String,
@@ -23,7 +24,7 @@ pub async fn transfer_solana_token(
 
     // Initialize the RPC client
     let commitment_config = CommitmentConfig::confirmed();
-    let rpc_client = RpcClient::new_with_commitment(rpc_url.to_string(), commitment_config);
+    let rpc_client = RpcClient::new_with_commitment(&secrets.rpc_url, commitment_config);
 
     // Initialize accounts needed for the transfer
     let sender_keypair: Keypair = Keypair::from_base58_string(&sender_private_key);
@@ -38,7 +39,7 @@ pub async fn transfer_solana_token(
         &sender_keypair.pubkey(), 
         &token_mint,
         &token_program_id,
-        rpc_url.clone()
+        &secrets
     ).await.expect("Failed to get or create sender token account");
 
     let receiver_token_account = get_or_create_ata(
@@ -46,7 +47,7 @@ pub async fn transfer_solana_token(
         &receiver_pubkey, 
         &token_mint,
         &token_program_id,
-        rpc_url.clone()
+        &secrets
     ).await.expect("Failed to get or create receiver token account");
 
 
