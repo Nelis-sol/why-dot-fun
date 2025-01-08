@@ -93,7 +93,6 @@ pub struct SponsorArgs {
     pub background_url: String,
     pub token_mint: String,
     pub original_tokens: i64,
-    pub available_tokens: i64,
     pub reward_tokens: i64,
     pub challenge_time: i32,
     pub system_instruction: String,
@@ -101,6 +100,7 @@ pub struct SponsorArgs {
     pub rating_threshold: i32,
     pub transaction: String,
 }
+
 
 #[derive(Serialize)]
 pub struct ResponseData {
