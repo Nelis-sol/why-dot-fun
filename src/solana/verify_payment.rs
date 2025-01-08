@@ -28,7 +28,7 @@ pub async fn verify_payment(
         return Err("Receiver pubkey is not among the signers".into());
     }
 
-    let signature = rpc_client.send_and_confirm_transaction_with_spinner(&transaction)?;
+    let signature = rpc_client.send_transaction(&transaction)?;
 
     return Ok(signature);
 

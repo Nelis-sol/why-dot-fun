@@ -43,7 +43,7 @@ pub async fn verify_deposit(
         return Err("Whydotfun treasury pubkey is not among the signers".into());
     }
 
-    let signature = rpc_client.send_and_confirm_transaction_with_spinner(&transaction)?;
+    let signature = rpc_client.send_transaction(&transaction)?;
 
     Ok(signature)
 }

@@ -71,7 +71,7 @@ pub async fn get_or_create_ata(
         latest_blockhash,
     );
 
-    let signature = rpc_client.send_and_confirm_transaction(&transaction)?;
+    let signature = rpc_client.send_transaction(&transaction)?;
 
     println!("signature: {}", signature.to_string());
 
