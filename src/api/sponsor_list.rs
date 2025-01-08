@@ -8,6 +8,7 @@ use solana_sdk::signature::{Signature, Signer};
 use solana_sdk::pubkey::Pubkey;
 use std::str::FromStr;
 use crate::StatusCode;
+use crate::api::ReturnSponsor;
 
 
 #[derive(Deserialize, Clone, Debug)]
@@ -42,6 +43,28 @@ pub async fn sponsor_list(
         .await
         .expect("Failed to get sponsor");
 
-        
-    (StatusCode::OK, Json(sponsor_list)).into_response()
+    // Transform each sponsor into a ReturnSponsor object
+    let return_sponsor_list: Vec<ReturnSponsor> = sponsor_list.into_iter().map(|sponsor| {
+        ReturnSponsor {
+            id: sponsor.id,
+            name: sponsor.name,
+            user_id: sponsor.user_id,
+            active: sponsor.active,
+            background_url: sponsor.background_url,
+            public_key: sponsor.public_key,
+            token_mint: sponsor.token_mint,
+            original_tokens: sponsor.original_tokens,
+            available_tokens: sponsor.available_tokens,
+            reward_tokens: sponsor.reward_tokens,
+            challenge_text: sponsor.challenge_text,
+            challenge_time: sponsor.challenge_time,
+            system_instruction: sponsor.system_instruction,
+            start_text: sponsor.start_text,
+            won_text: sponsor.won_text,
+            lost_text: sponsor.lost_text,
+            rating_threshold: sponsor.rating_threshold,
+        }
+    }).collect();
+
+    (StatusCode::OK, Json(return_sponsor_list)).into_response()
 }
