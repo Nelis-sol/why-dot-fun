@@ -7,7 +7,7 @@ use reqwest::{
 };
 use reqwest_oauth1::{OAuthClientProvider, Secrets as OauthSecrets};
 use serde::Deserialize;
-use std::{iter, time::Duration};
+use std::{iter, time::Duration, time::Instant};
 use tokio::time::sleep;
 use twitter_v2::{authorization::Oauth1aToken, TwitterApi};
 use crate::database::Database;
@@ -26,7 +26,19 @@ pub async fn upload_video(
         &secrets.twitter_access_secret,
     );
 
-    let video_data = tokio::fs::read(format!("cache/drafts/{}.mp4", draft.call_sid)).await?;
+    let start_time = Instant::now();
+    let max_duration = Duration::from_secs(15 * 60); // 15 minutes
+    let check_interval = Duration::from_secs(60); // 1 minute
+
+    let video_data = loop {
+        match tokio::fs::read(format!("cache/drafts/{}.mp4", draft.call_sid)).await {
+            Ok(data) => break data,
+            Err(_) if start_time.elapsed() < max_duration => {
+                sleep(check_interval).await;
+            }
+            Err(e) => return Err(anyhow!("Failed to find video file: {}", e)),
+        }
+    };
 
     let media_id = init_video_upload(reqwest.clone(), oauth.clone(), video_data.len()).await?;
 
