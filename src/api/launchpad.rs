@@ -47,7 +47,7 @@ pub async fn launchpad(
     Extension(database): Extension<Database>,
     Json(new_sponsor): Json<SponsorArgs>,
 ) -> impl IntoResponse {
-    let challenge: String = String::from("Thank you {name}! Lets start the game: ");
+    let challenge: String = String::from("Lets start the game: ");
 
     let private_key = generate_private_key();
     let public_key = private_key.pubkey().to_string();
