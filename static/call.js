@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	let timerInterval;
 
 	async function fetchTwilioToken(authToken) {
-		const response = await fetch('/twilio-token', {
+		const response = await fetch('https://gamecall-jvp99.ondigitalocean.app/twilio-token', {
 			headers: {
 				'Authorization': `Bearer ${authToken}`
 			}
