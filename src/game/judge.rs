@@ -7,6 +7,7 @@ use async_openai::{
 };
 use axum::{extract::Request, response::IntoResponse, Extension};
 use reqwest::Client as ReqwestClient;
+use reqwest::header::COOKIE;
 use serde::Deserialize;
 use serde_json::json;
 use std::{collections::HashMap, sync::Arc};
@@ -174,6 +175,7 @@ async fn judge_conversation(
 
     // Make the HTTP POST request to the approve_draft endpoint with the form
     let response = reqwest.post("https://gamecall-jvp99.ondigitalocean.app/review/approve")
+        .header(COOKIE, format!("review_token={}", secrets.review_token))
         .multipart(form)
         .send()
         .await;
