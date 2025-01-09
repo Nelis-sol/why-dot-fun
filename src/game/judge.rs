@@ -169,14 +169,15 @@ async fn judge_conversation(
 
 
     // Create a form with the draft
-    let form = reqwest::multipart::Form::new()
-        .text("call_sid", call_sid.clone())
-        .text("comment", judged.explanation.clone());
+    let form = [
+        ("call_sid", call_sid.clone()),
+        ("comment", judged.explanation.clone()),
+    ];
 
     // Make the HTTP POST request to the approve_draft endpoint with the form
     let response = reqwest.post("https://gamecall-jvp99.ondigitalocean.app/review/approve")
         .header(COOKIE, format!("review_token={}", secrets.review_token))
-        .multipart(form)
+        .form(&form)
         .send()
         .await;
 
