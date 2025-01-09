@@ -32,6 +32,8 @@ pub async fn upload_video(
 
     let media_id = init_video_upload(reqwest.clone(), oauth.clone(), video_data.len()).await?;
 
+    println!("media_id: {:?}", media_id);
+
     for (i, chunk) in video_data.chunks(CHUNK_SIZE).enumerate() {
         append_video_upload(reqwest.clone(), oauth.clone(), media_id, i, chunk).await?;
     }
@@ -86,6 +88,8 @@ async fn init_video_upload(
         .json()
         .await?;
 
+    println!("init_response: {}", init_response.media_id);
+
     Ok(init_response.media_id)
 }
 
@@ -96,6 +100,8 @@ async fn append_video_upload(
     segment_index: usize,
     media: &[u8],
 ) -> Result<()> {
+    println!("append_video_upload: {:?}", media_id);
+
     let form = Form::new()
         .text("command", "APPEND")
         .text("media_id", media_id.to_string())
@@ -117,6 +123,8 @@ async fn finalize_video_upload(
     secrets: OauthSecrets<'_>,
     media_id: u64,
 ) -> Result<()> {
+    println!("finalize_video_upload: {:?}", media_id);
+    
     let finalize_params = [("command", "FINALIZE"), ("media_id", &media_id.to_string())];
     reqwest
         .oauth1(secrets)
