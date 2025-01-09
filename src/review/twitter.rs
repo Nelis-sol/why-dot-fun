@@ -28,14 +28,6 @@ pub async fn upload_video(
 
     sleep(Duration::from_secs(10)).await;
 
-    let mut entries = tokio::fs::read_dir("cache/drafts/").await?;
-    while let Some(entry) = entries.next_entry().await? {
-        let path = entry.path();
-        if path.is_file() {
-            println!("File: {:?}", path);
-        }
-    }
-
     let video_data = tokio::fs::read(format!("cache/drafts/{}.mp4", draft.call_sid)).await?;
 
     let media_id = init_video_upload(reqwest.clone(), oauth.clone(), video_data.len()).await?;
@@ -87,7 +79,6 @@ async fn init_video_upload(
         ("total_bytes", &total_bytes.to_string()),
     ];
 
-    // let init_response: MediaInitResponse = reqwest
     let init_response: MediaInitResponse = reqwest
         .oauth1(secrets)
         .post("https://upload.twitter.com/1.1/media/upload.json")
@@ -99,7 +90,13 @@ async fn init_video_upload(
 
     println!("init_response: {:?}", init_response);
 
-    Ok(init_response.media_id)
+    match init_response {
+        MediaInitResponse::Success { media_id, .. } => Ok(media_id),
+        MediaInitResponse::Error { errors } => {
+            let error_messages: Vec<String> = errors.iter().map(|e| e.message.clone()).collect();
+            Err(anyhow!("Failed to initialize video upload: {:?}", error_messages))
+        }
+    }
 }
 
 async fn append_video_upload(
@@ -177,8 +174,22 @@ async fn wait_video_upload_successful(
 }
 
 #[derive(Deserialize, Debug)]
-struct MediaInitResponse {
-    media_id: u64,
+#[serde(untagged)]
+enum MediaInitResponse {
+    Success {
+        media_id: u64,
+        media_id_string: String,
+        expires_after_secs: u64,
+    },
+    Error {
+        errors: Vec<ErrorDetail>,
+    },
+}
+
+#[derive(Deserialize, Debug)]
+struct ErrorDetail {
+    code: u32,
+    message: String,
 }
 
 #[derive(Deserialize)]
