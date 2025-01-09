@@ -11,6 +11,8 @@ use aws_credential_types::Credentials;
 use aws_sdk_s3::Client;
 use aws_sdk_s3::types::ObjectCannedAcl;
 use crate::Database;
+use reqwest::header::COOKIE;
+
 
 mod background;
 mod ffmpeg;
@@ -23,6 +25,7 @@ pub async fn render_video(
     cached_call: CachedCall,
     rating: u8,
     database: Database,
+    judgement: String,
 ) {
     // Ensure the necessary directories exist
     let _ = tokio::fs::create_dir_all(format!("cache/recordings/{call_sid}")).await;
@@ -53,8 +56,8 @@ pub async fn render_video(
 
     // Generate a background video or download it depending on the rating
     let background_video_path = match rating >= cached_call.sponsor.rating_threshold as u8 {
-        true => generate_background_video(reqwest, &secrets, &call_sid, &cached_messages).await,
-        false => download_background_video(reqwest, &cached_call, &call_sid).await,
+        true => generate_background_video(reqwest.clone(), &secrets, &call_sid, &cached_messages).await,
+        false => download_background_video(reqwest.clone(), &cached_call, &call_sid).await,
     };
 
     let attempt = database
@@ -115,6 +118,33 @@ pub async fn render_video(
         .send()
         .await
         .map_err(|e| Error::new(e));
+
+
+        // Create a form with the draft
+        let form = [
+            ("call_sid", call_sid.clone()),
+            ("comment", judgement.clone()),
+        ];
+    
+
+    // Make the HTTP POST request to the approve_draft endpoint with the form
+    let response = reqwest.post("https://gamecall-jvp99.ondigitalocean.app/review/approve")
+        .header(COOKIE, format!("review_token={}", secrets.review_token))
+        .form(&form)
+        .send()
+        .await;
+
+    match response {
+        Ok(resp) if resp.status().is_success() => {
+            log::debug!("Draft approved successfully");
+        }
+        Ok(resp) => {
+            log::error!("Failed to approve draft: {:?}", resp.text().await);
+        }
+        Err(e) => {
+            log::error!("Error making request to approve draft: {:?}", e);
+        }
+    }
 
 
 }

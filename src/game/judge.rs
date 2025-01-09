@@ -157,6 +157,7 @@ async fn judge_conversation(
         cached_call.clone(),
         judged.rating,
         database.clone(),
+        judged.explanation.clone()
     ));
 
     let video_url = format!("https://gamecall.ams3.cdn.digitaloceanspaces.com/{call_sid}.mp4");
@@ -167,31 +168,6 @@ async fn judge_conversation(
         .context("Updating attempt with is_winner true")
         .expect("Failed to update attempt with video url");
 
-
-    // Create a form with the draft
-    let form = [
-        ("call_sid", call_sid.clone()),
-        ("comment", judged.explanation.clone()),
-    ];
-
-    // Make the HTTP POST request to the approve_draft endpoint with the form
-    let response = reqwest.post("https://gamecall-jvp99.ondigitalocean.app/review/approve")
-        .header(COOKIE, format!("review_token={}", secrets.review_token))
-        .form(&form)
-        .send()
-        .await;
-
-    match response {
-        Ok(resp) if resp.status().is_success() => {
-            log::debug!("Draft approved successfully");
-        }
-        Ok(resp) => {
-            log::error!("Failed to approve draft: {:?}", resp.text().await);
-        }
-        Err(e) => {
-            log::error!("Error making request to approve draft: {:?}", e);
-        }
-    }
 
     let result = match judged.won_prize {
         true => won_handler(twilio, database, secrets, caller_phone_number, call_sid.clone(), cached_call, video_url).await,

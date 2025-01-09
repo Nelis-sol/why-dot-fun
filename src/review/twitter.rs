@@ -32,12 +32,18 @@ pub async fn upload_video(
 
     let video_data = loop {
         match tokio::fs::read(format!("cache/drafts/{}.mp4", draft.call_sid)).await {
-            Ok(data) => break data,
+            Ok(data) => {
+                if data.len() >= 5 * 1024 * 1024 { // Check if file is at least 1 MB
+                    break data;
+                }
+                // If file is too small, continue the loop
+            }
             Err(_) if start_time.elapsed() < max_duration => {
-                sleep(check_interval).await;
+                // If file not found, continue the loop
             }
             Err(e) => return Err(anyhow!("Failed to find video file: {}", e)),
         }
+        sleep(check_interval).await;
     };
 
     let media_id = init_video_upload(reqwest.clone(), oauth.clone(), video_data.len()).await?;
