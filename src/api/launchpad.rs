@@ -49,6 +49,7 @@ pub async fn launchpad(
 ) -> impl IntoResponse {
     let challenge: String = String::from("Lets start the game: ");
 
+
     let private_key = generate_private_key();
     let public_key = private_key.pubkey().to_string();
     let private_key_base58 = private_key.to_base58_string();
@@ -65,7 +66,11 @@ pub async fn launchpad(
         original_tokens: new_sponsor.original_tokens,
         available_tokens: new_sponsor.original_tokens,
         reward_tokens: new_sponsor.reward_tokens,
-        challenge_time: new_sponsor.challenge_time,
+        challenge_time: if new_sponsor.challenge_time > 60 {
+            60
+        } else {
+            new_sponsor.challenge_time
+        },
         system_instruction: new_sponsor.system_instruction,
         greeting_text: "Welcome to Why dot Fun. Please tell me your name to start the game.".to_string(),
         challenge_text: new_sponsor.challenge.clone(),

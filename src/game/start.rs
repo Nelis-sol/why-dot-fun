@@ -88,7 +88,7 @@ pub async fn start_handler(
             let mut twiml = Twiml::new();
 
             twiml.add(&Say {
-                txt: sponsor.challenge_text.to_owned(),
+                txt: sponsor.start_text.to_owned(),
                 voice: Voice::Custom(CONFIG.settings.voice.to_owned()),
                 language: CONFIG.settings.language.to_owned(),
             });
