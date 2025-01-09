@@ -179,7 +179,9 @@ enum MediaInitResponse {
     Success {
         media_id: u64,
         media_id_string: String,
+        size: Option<u64>,
         expires_after_secs: u64,
+        video: Option<VideoDetails>,
     },
     Error {
         errors: Vec<ErrorDetail>,
@@ -200,4 +202,11 @@ struct MediaStatusResponse {
 #[derive(Deserialize)]
 struct MediaProcessingInfo {
     state: String,
+}
+
+#[derive(Deserialize, Debug)]
+struct VideoDetails {
+    video_type: String,
+    w: u32,
+    h: u32,
 }
