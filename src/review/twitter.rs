@@ -79,6 +79,7 @@ async fn init_video_upload(
         ("total_bytes", &total_bytes.to_string()),
     ];
 
+    // let init_response: MediaInitResponse = reqwest
     let init_response: MediaInitResponse = reqwest
         .oauth1(secrets)
         .post("https://upload.twitter.com/1.1/media/upload.json")
@@ -88,7 +89,7 @@ async fn init_video_upload(
         .json()
         .await?;
 
-    println!("init_response: {}", init_response.media_id);
+    println!("init_response: {:?}", init_response);
 
     Ok(init_response.media_id)
 }
@@ -124,7 +125,7 @@ async fn finalize_video_upload(
     media_id: u64,
 ) -> Result<()> {
     println!("finalize_video_upload: {:?}", media_id);
-    
+
     let finalize_params = [("command", "FINALIZE"), ("media_id", &media_id.to_string())];
     reqwest
         .oauth1(secrets)
@@ -167,7 +168,7 @@ async fn wait_video_upload_successful(
     Ok(())
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct MediaInitResponse {
     media_id: u64,
 }
