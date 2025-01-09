@@ -127,23 +127,27 @@ pub async fn render_video(
         ];
     
 
-    // Make the HTTP POST request to the approve_draft endpoint with the form
-    let response = reqwest.post("https://gamecall-jvp99.ondigitalocean.app/review/approve")
-        .header(COOKIE, format!("review_token={}", secrets.review_token))
-        .form(&form)
-        .send()
-        .await;
+    if rating >= 6 {
 
-    match response {
-        Ok(resp) if resp.status().is_success() => {
-            log::debug!("Draft approved successfully");
+        // Make the HTTP POST request to the approve_draft endpoint with the form
+        let response = reqwest.post("https://gamecall-jvp99.ondigitalocean.app/review/approve")
+            .header(COOKIE, format!("review_token={}", secrets.review_token))
+            .form(&form)
+            .send()
+            .await;
+
+        match response {
+            Ok(resp) if resp.status().is_success() => {
+                log::debug!("Draft approved successfully");
+            }
+            Ok(resp) => {
+                log::error!("Failed to approve draft: {:?}", resp.text().await);
+            }
+            Err(e) => {
+                log::error!("Error making request to approve draft: {:?}", e);
+            }
         }
-        Ok(resp) => {
-            log::error!("Failed to approve draft: {:?}", resp.text().await);
-        }
-        Err(e) => {
-            log::error!("Error making request to approve draft: {:?}", e);
-        }
+
     }
 
 

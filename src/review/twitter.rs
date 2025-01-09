@@ -49,9 +49,14 @@ pub async fn post_tweet(
     media_id: u64,
     draft: &Draft,
 ) -> Result<()> {
+
+    let sponsored = String::from("\n.\n.\n.\npowered by @theCRABsite");
+
+    let tweet_text = format!("{} {}", draft.comment, sponsored);
+
     let tweet_object = twitter
         .post_tweet()
-        .text(draft.comment.to_owned())
+        .text(tweet_text.to_owned())
         .add_media(iter::once(media_id), iter::empty::<u64>())
         .send()
         .await?;
