@@ -66,8 +66,6 @@ async fn approve_draft(
     draft: Form<Draft>,
 ) -> Redirect {
 
-    println!("Approving draft {}", draft.call_sid);
-
     log::debug!("Approving draft {}", draft.call_sid);
     let media_id = match twitter::upload_video(&reqwest, &secrets, &draft).await {
         Ok(media_id) => media_id,
@@ -77,16 +75,12 @@ async fn approve_draft(
         }
     };
 
-    println!("Uploaded video with media_id {}", media_id);
-
     log::debug!("Posting tweet with media_id {}", media_id);
     if let Err(e) = twitter::post_tweet(&twitter, media_id, &draft).await {
         log::error!("Failed to post tweet: {:?}", e);
         return Redirect::to("/review");
     }
 
-    println!("Tweet posted successfully");
-    
     log::debug!("Tweet posted successfully");
     let _ = tokio::fs::remove_file(format!("cache/drafts/{}.mp4", draft.call_sid)).await;
     let _ = tokio::fs::remove_dir_all(format!("cache/recordings/{}", draft.call_sid)).await;

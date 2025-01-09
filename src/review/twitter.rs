@@ -32,8 +32,6 @@ pub async fn upload_video(
 
     let media_id = init_video_upload(reqwest.clone(), oauth.clone(), video_data.len()).await?;
 
-    println!("media_id: {:?}", media_id);
-
     for (i, chunk) in video_data.chunks(CHUNK_SIZE).enumerate() {
         append_video_upload(reqwest.clone(), oauth.clone(), media_id, i, chunk).await?;
     }
@@ -61,8 +59,6 @@ pub async fn post_tweet(
         .send()
         .await?;
 
-    println!("tweet url: {}", tweet_object.url());
-
     dotenv::dotenv().ok();
     let secrets = Secrets::from_env();
     let database = Database::new(&secrets).await;
@@ -76,7 +72,6 @@ async fn init_video_upload(
     secrets: OauthSecrets<'_>,
     total_bytes: usize,
 ) -> Result<u64> {
-    println!("init_video_upload: {:?}", total_bytes);
 
     let init_params = [
         ("command", "INIT"),
@@ -92,8 +87,6 @@ async fn init_video_upload(
         .await?
         .json()
         .await?;
-
-    println!("init_response: {:?}", init_response);
 
     match init_response {
         MediaInitResponse::Success { media_id, .. } => Ok(media_id),
@@ -111,7 +104,6 @@ async fn append_video_upload(
     segment_index: usize,
     media: &[u8],
 ) -> Result<()> {
-    println!("append_video_upload: {:?}", media_id);
 
     let form = Form::new()
         .text("command", "APPEND")
@@ -134,7 +126,6 @@ async fn finalize_video_upload(
     secrets: OauthSecrets<'_>,
     media_id: u64,
 ) -> Result<()> {
-    println!("finalize_video_upload: {:?}", media_id);
 
     let finalize_params = [("command", "FINALIZE"), ("media_id", &media_id.to_string())];
     reqwest
