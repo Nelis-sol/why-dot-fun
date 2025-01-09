@@ -26,7 +26,9 @@ pub async fn upload_video(
         &secrets.twitter_access_secret,
     );
 
-    let video_data = tokio::fs::read(format!("cache/drafts/{}.mp4", draft.call_sid)).await?;
+    let video_url = format!("https://gamecall.ams3.cdn.digitaloceanspaces.com/{}.mp4", draft.call_sid);
+
+    let video_data = reqwest.get(&video_url).send().await?.bytes().await?;
 
     let media_id = init_video_upload(reqwest.clone(), oauth.clone(), video_data.len()).await?;
 
@@ -67,6 +69,8 @@ async fn init_video_upload(
     secrets: OauthSecrets<'_>,
     total_bytes: usize,
 ) -> Result<u64> {
+    println!("init_video_upload: {:?}", total_bytes);
+
     let init_params = [
         ("command", "INIT"),
         ("media_type", "video/mp4"),

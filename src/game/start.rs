@@ -85,8 +85,18 @@ pub async fn start_handler(
                 .expect("Failed to create attempt");
 
 
-            // Generate the twiml response
-            let twiml = generate_start_twiml(&sponsor.greeting_text);
+            let mut twiml = Twiml::new();
+
+            twiml.add(&Say {
+                txt: sponsor.challenge_text.to_owned(),
+                voice: Voice::Custom(CONFIG.settings.voice.to_owned()),
+                language: CONFIG.settings.language.to_owned(),
+            });
+        
+            twiml.add(&Redirect {
+                method: Method::Post,
+                url: "/challenge/start".to_owned(),
+            });
 
             // Add the call to the cache
             initialize_cached_call(&cache, call.sid.clone(), sponsor).await;
@@ -113,7 +123,7 @@ fn generate_start_twiml(greeting: &str) -> Twiml {
 
     twiml.add(&Redirect {
         method: Method::Post,
-        url: "/redirect-gather/name".to_owned(),
+        url: "/challenge/start".to_owned(),
     });
 
     twiml

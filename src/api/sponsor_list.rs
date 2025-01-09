@@ -20,7 +20,6 @@ pub async fn sponsor_list(
     Extension(database): Extension<Database>,
     Json(request): Json<SponsorListArgs>,
 ) -> impl IntoResponse {
-    println!("sponsor list request: {:?}", request.clone());
 
     let signature = request.signature;
     let public_key = request.public_key;
