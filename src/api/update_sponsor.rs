@@ -1,10 +1,9 @@
 use axum::response::IntoResponse;
 use axum::Json;
-use crate::api::{Attempt, AttemptReturn};
 use axum::Extension;
 use crate::Database;
 use serde::{Deserialize, Serialize};
-use solana_sdk::signature::{Signature, Signer};
+use solana_sdk::signature::Signature;
 use solana_sdk::pubkey::Pubkey;
 use std::str::FromStr;
 use crate::api::ReturnSponsor;
@@ -87,6 +86,7 @@ pub async fn update_sponsor(
         won_text: sponsor_entry.won_text,
         lost_text: sponsor_entry.lost_text,
         rating_threshold: sponsor_entry.rating_threshold,
+        initial_funded: sponsor_entry.initial_funded,
     };
 
     (StatusCode::OK, Json(return_sponsor)).into_response()

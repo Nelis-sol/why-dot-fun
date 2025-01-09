@@ -352,7 +352,7 @@ impl Database {
         sqlx::query!(
             r#"
                 UPDATE sponsors
-                SET active = true
+                SET active = true, initial_funded = true
                 WHERE public_key = $1
             "#,
             sponsor_public_key
@@ -495,6 +495,7 @@ pub struct Sponsor {
     pub won_text: String,
     pub lost_text: String,
     pub rating_threshold: i32,
+    pub initial_funded: bool,
 }
 
 #[allow(unused)]

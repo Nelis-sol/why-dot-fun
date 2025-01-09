@@ -8,7 +8,6 @@ use solana_client::rpc_client::RpcClient;
 use solana_sdk::commitment_config::CommitmentConfig;
 use std::str::FromStr;
 use solana_sdk::compute_budget::ComputeBudgetInstruction;
-use solana_sdk::system_instruction;
 use solana_sdk::message::Message;
 use crate::secrets::Secrets;
 use crate::database::Database;

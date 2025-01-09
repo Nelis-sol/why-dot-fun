@@ -16,7 +16,6 @@ pub struct DepositArgs {
     pub sponsor_public_key: String,
 }
 
-#[axum::debug_handler]
 pub async fn deposit(
     secrets: Extension<Secrets>,
     Extension(database): Extension<Database>,

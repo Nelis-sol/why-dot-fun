@@ -10,7 +10,6 @@ use aws_config::Region;
 use aws_credential_types::Credentials;
 use aws_sdk_s3::Client;
 use aws_sdk_s3::types::ObjectCannedAcl;
-use axum::Extension;
 use crate::Database;
 
 mod background;
@@ -106,7 +105,7 @@ pub async fn render_video(
         .await
         .expect("Failed to read file");
 
-    let result = s3
+    let _result = s3
         .put_object()
         .bucket(bucket_name)
         .key(key)

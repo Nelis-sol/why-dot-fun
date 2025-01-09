@@ -1,15 +1,9 @@
 use axum::response::IntoResponse;
 use axum::Json;
 use axum::Extension;
-use crate::solana::verify_payment::verify_payment;
-use crate::database::Sponsor;
-use crate::api::SponsorArgs;
 use crate::Database;
-use anyhow::Context;
 use crate::StatusCode;
 use serde::{Serialize, Deserialize};
-use crate::solana::keys::generate_private_key;
-use solana_sdk::signer::Signer;
 use crate::secrets::Secrets;
 use base64::{engine::general_purpose, Engine as _};
 use bincode;
@@ -48,10 +42,15 @@ pub async fn activate_sponsor(
     ).await
     .unwrap();  
 
-    
+
+    let sponsor = database.get_sponsor_by_public_key(sponsor_args.sponsor_public_key.clone()).await.unwrap();
+
+    if sponsor.initial_funded == true {
+        return (StatusCode::BAD_REQUEST, "Initial was already funded").into_response();
+    }
+
     database.update_sponsor_to_active(sponsor_args.sponsor_public_key.clone()).await.unwrap();
 
-    let sponsor = database.get_sponsor_by_public_key(sponsor_args.sponsor_public_key).await.unwrap();
 
     let return_sponsor = ReturnSponsor {
         id: sponsor.id,
@@ -73,6 +72,7 @@ pub async fn activate_sponsor(
         greeting_text: sponsor.greeting_text,
         end_text: sponsor.end_text,
         rating_threshold: sponsor.rating_threshold,
+        initial_funded: true,
     };
 
     let response_data = ResponseData {

@@ -15,7 +15,6 @@ use twilio::{twiml::Twiml, Call, Client as TwilioClient, OutboundMessage};
 use crate::solana::transfer::transfer_solana_token;
 use crate::solana::keys::generate_private_key;
 use solana_sdk::signature::Signer;
-use crate::review::Draft;
 
 
 pub async fn judge_handler(

@@ -38,6 +38,7 @@ pub struct ReturnSponsor {
     pub greeting_text: String,
     pub end_text: String,
     pub rating_threshold: i32,
+    pub initial_funded: bool,
 }
 
 
@@ -73,6 +74,7 @@ pub async fn launchpad(
         won_text: "Congratulations {name}, you won! Claim your prize: {link}. View the video of your attempt here: {video_url} (it will be ready in around 15 minutes)".to_string(),
         lost_text: "Unfortunately, you did not win this time. Better luck next time! Check out https://x.com/whydotfun for tips and tricks to improve your chances.".to_string(),
         rating_threshold: new_sponsor.rating_threshold,
+        initial_funded: false,
     };
 
     // Decode the base64-encoded transaction
@@ -112,6 +114,7 @@ pub async fn launchpad(
         greeting_text: sponsor_entry.greeting_text,
         end_text: sponsor_entry.end_text,
         rating_threshold: sponsor_entry.rating_threshold,
+        initial_funded: sponsor_entry.initial_funded,
     };
 
     let response_data = ResponseData {

@@ -1,10 +1,9 @@
 use axum::response::IntoResponse;
 use axum::Json;
-use crate::api::{Attempt, AttemptReturn};
 use axum::Extension;
 use crate::Database;
 use serde::Deserialize;
-use solana_sdk::signature::{Signature, Signer};
+use solana_sdk::signature::Signature;
 use solana_sdk::pubkey::Pubkey;
 use std::str::FromStr;
 use crate::StatusCode;
@@ -65,6 +64,7 @@ pub async fn sponsor_list(
             greeting_text: sponsor.greeting_text,
             end_text: sponsor.end_text,
             rating_threshold: sponsor.rating_threshold,
+            initial_funded: sponsor.initial_funded,
         }
     }).collect();
 
