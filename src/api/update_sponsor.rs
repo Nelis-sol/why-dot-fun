@@ -30,8 +30,6 @@ pub async fn update_sponsor(
     Json(request): Json<UpdateSponsorArgs>,
 ) -> impl IntoResponse {
 
-    println!("update sponsor request: {:?}", request.clone());
-
     let signature = &request.signature;
     let public_key = &request.user_id;
 
@@ -40,7 +38,6 @@ pub async fn update_sponsor(
     let public_key = Pubkey::from_str(public_key).expect("Invalid public key format");
 
     let message = chrono::Utc::now().format("%Y-%m-%d %H:00:00").to_string();
-    println!("current_hour: {}", message);
 
     // Verify the signature
     if !signature.verify(&public_key.to_bytes(), message.as_bytes()) {

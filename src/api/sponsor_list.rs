@@ -29,7 +29,6 @@ pub async fn sponsor_list(
     let public_key = Pubkey::from_str(&public_key).expect("Invalid public key format");
 
     let message = chrono::Utc::now().format("%Y-%m-%d %H:00:00").to_string();
-    println!("message: {}", message);
 
     // Verify the signature
     if !signature.verify(&public_key.to_bytes(), message.as_bytes()) {
