@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	async function fetchTwilioToken(authToken) {
 		const response = await fetch('https://gamecall-jvp99.ondigitalocean.app/twilio-token', {
+			method: 'POST',
 			headers: {
 				'Authorization': `Bearer ${authToken}`
 			}
