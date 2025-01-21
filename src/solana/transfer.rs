@@ -79,7 +79,7 @@ pub async fn transfer_solana_token(
         latest_blockhash
     );
     
-    let signature = rpc_client.send_transaction(&transaction)?;
+    let signature = rpc_client.send_and_confirm_transaction(&transaction).expect("Failed to send and confirm transaction");
 
 
     Ok(signature)
