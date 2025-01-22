@@ -1,5 +1,8 @@
 # About the project
 
+![alt text](https://github.com/Nelis-sol/gamecall/blob/main/gamecall-why-dot-fun.png "Why.fun logo")
+<br />
+
 ## Gamecall (otherwise known as why.fun)
 
 With gamecall, users can call with an AI agent and complete a challenge. The AI agent has access to a **phonenumber** (through Twilio), a **crypto-wallet** (on Solana), a **social media account** (on Twitter/X). 
@@ -13,20 +16,24 @@ Additionally, the AI agent has capabailities to **generate video content** based
   * moderate/decide if content is suitable for posting on socials
   * write the tweet and post it on X witht the generated video of the call interaction
 
-
-![alt text](https://github.com/Nelis-sol/gamecall/blob/main/gamecall-why-dot-fun.png "Why.fun logo")
-
+<br /><br />
 
 ## Built with
-  * Rust  * Axum  * Tokio  * Solana
+  - Rust
+  - Axum  
+  - Tokio  
+  - Solana
+<br />
+  - Postgresql
+  - ffmpeg
+<br />
+  - DigitalOcean (video storage)
+  - Twilio (voice and text)
+  - Twitter/X (post to social)
 
-  * Postgresql
-  * ffmpeg
-    
-  * DigitalOcean (video storage)
-  * Twilio (voice and text)
-  * Twitter/X (post to social)
-
+<br /><br />
+____
+<br /><br />
 
 ## Install & run
 
@@ -40,10 +47,12 @@ If you have Rust already installed, make sure to update to the latest stable ver
 ```
 $ rustup update
 ```
+<br /><br />
 
 ### Set up environment variables
 Some environment variables are required to be present during the build phase (e.g. the database url for sqlx). So setting up the environment variables before continuing the next steps is recommended. The database url is required to set up before building, the others are optional. 
 
+<br /><br />
 
 ### Set up tables in postgresql database
 
