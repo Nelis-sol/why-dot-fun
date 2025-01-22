@@ -4,7 +4,7 @@
 <br />
 View a video demo of the result here:
 [Video demo](https://github.com/Nelis-sol/gamecall/blob/main/gamecall-why-dot-fun-video-demo.mp4)
-<br />
+<br /><br />
 
 ## Gamecall (otherwise known as why.fun)
 
@@ -27,10 +27,8 @@ Additionally, the AI agent has capabailities to **generate video content** based
 - [x] **Axum**  
 - [x] **Tokio**  
 - [x] **Solana**
-<br />
 - [x] Postgresql
 - [x] ffmpeg
-<br />
 - [x] DigitalOcean (video storage)
 - [x] Twilio (voice and text)
 - [x] Twitter/X (post to social)
@@ -57,6 +55,7 @@ $ rustup update
 
 ### 2. Set up environment variables
 Some environment variables are required to be present during the build phase (e.g. the database url for sqlx). So setting up the environment variables before continuing the next steps is recommended. The database url is required to set up before building, the others are optional. 
+[.env.example](https://github.com/Nelis-sol/gamecall/blob/main/.env.example)
 
 <br />
 
