@@ -33,7 +33,9 @@ Additionally, the AI agent has capabailities to **generate video content** based
   * Twitter/X (post to social)
 
 <br />
+
 ____
+
 <br />
 
 ## Install & run
@@ -48,7 +50,7 @@ If you have Rust already installed, make sure to update to the latest stable ver
 ```
 $ rustup update
 ```
-<br /><br />
+<br />
 
 ### 2. Set up environment variables
 Some environment variables are required to be present during the build phase (e.g. the database url for sqlx). So setting up the environment variables before continuing the next steps is recommended. The database url is required to set up before building, the others are optional. 
@@ -57,11 +59,13 @@ Some environment variables are required to be present during the build phase (e.
 
 ### 3. Set up tables in postgresql database
 
+
    #### 3.1. Option 1: Use sqlx migrations
    Run sqlx migration to set up tables in the database. 
    ```
    sqlx migrate run
    ```
+
 
    #### 3.2. Option 2: Set up tables manually
    Set up tables in the database manually. 
@@ -72,6 +76,7 @@ Some environment variables are required to be present during the build phase (e.
 
 ### Run program
 Three options are provided here to run gamecall. I have a preference for option 2 (automatically build and deploy on Digital Ocean), but use what suits your requirements.
+
 
 #### Option 1: Build and run directly
 
@@ -93,6 +98,7 @@ cargo run --release
 8. Complete rest of the set up with default settings
 
 Now everytime you push a commit to your repository, it will be build and deployed automatically on DigitalOcean.
+
 <br /><br />
 
 #### Option 3: Build and run using Docker
