@@ -27,6 +27,7 @@ Additionally, the AI agent has capabailities to **generate video content** based
 - [x] **Axum**  
 - [x] **Tokio**  
 - [x] **Solana**
+- [x] **Docker**
 - [x] Postgresql
 - [x] ffmpeg
 - [x] DigitalOcean (video storage)
