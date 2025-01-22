@@ -18,10 +18,7 @@ Additionally, the AI agent has capabailities to **generate video content** based
 
 
 ## Built with
-  * Rust
-  * Axum
-  * Tokio
-  * Solana
+  * Rust  * Axum  * Tokio  * Solana
 
   * Postgresql
   * ffmpeg
@@ -43,5 +40,57 @@ If you have Rust already installed, make sure to update to the latest stable ver
 ```
 $ rustup update
 ```
+
+### Set up environment variables
+Some environment variables are required to be present during the build phase (e.g. the database url for sqlx). So setting up the environment variables before continuing the next steps is recommended. The database url is required to set up before building, the others are optional. 
+
+
+### Set up tables in postgresql database
+
+#### Option 1: Use sqlx migrations
+Run sqlx migration to set up tables in the database. 
+```
+sqlx migrate run
+```
+
+#### Option 2: Set up tables manually
+Set up tables in the database manually. 
+Use the queries in this file: 
+![alt_text](https://github.com/Nelis-sol/gamecall/blob/main/migrations/20241113102717_1.up.sql "Queries to set up tables")
+
+
+### Run program
+
+#### Option 1: Build and run directly
+
+```
+DATABASE_URL=<your-database-connection-string> cargo build --release
+cargo run --release 
+```
+
+#### Option 2: Automatically build and run with Digital Ocean
+
+1. Login to Digital Ocean
+2. App Platform
+3. Create app
+4. Authorize Digital Ocean to access repositories
+5. Select your (gamecall) repository 
+6. Select auto-deploy (if not selected already)
+7. Set environment variables
+8. Complete rest of the set up with default settings
+
+Now everytime you push a commit to your repository, it will be build and deployed automatically on DigitalOcean.
+
+#### Option 3: Build and run using Docker
+
+```
+docker build -t webcall .
+docker run -p 8080:8080 -t webcall
+```
+
+
+
+
+
 
 
