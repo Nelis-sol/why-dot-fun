@@ -2,6 +2,9 @@
 
 ![alt text](https://github.com/Nelis-sol/gamecall/blob/main/gamecall-why-dot-fun.png "Why.fun logo")
 <br />
+View a video demo of the result here:
+[Video demo](https://github.com/Nelis-sol/gamecall/blob/main/gamecall-why-dot-fun-video-demo.mp4)
+<br />
 
 ## Gamecall (otherwise known as why.fun)
 
@@ -20,17 +23,17 @@ Additionally, the AI agent has capabailities to **generate video content** based
 
 ## Built with
 
-  * **Rust**
-  * **Axum**  
-  * **Tokio**  
-  * **Solana**
-    
-  * Postgresql
-  * ffmpeg
-    
-  * DigitalOcean (video storage)
-  * Twilio (voice and text)
-  * Twitter/X (post to social)
+- [x] **Rust**
+- [x] **Axum**  
+- [x] **Tokio**  
+- [x] **Solana**
+<br />
+- [x] Postgresql
+- [x] ffmpeg
+<br />
+- [x] DigitalOcean (video storage)
+- [x] Twilio (voice and text)
+- [x] Twitter/X (post to social)
 
 <br />
 
@@ -65,16 +68,16 @@ Some environment variables are required to be present during the build phase (e.
    ```
    sqlx migrate run
    ```
-
+<br />
 
    #### 3.2. Option 2: Set up tables manually
    Set up tables in the database manually. 
    Use the queries in this file: 
-   ![alt_text](https://github.com/Nelis-sol/gamecall/blob/main/migrations/20241113102717_1.up.sql "Queries to set up tables")
+   [Queries to set up tables](https://github.com/Nelis-sol/gamecall/blob/main/migrations/20241113102717_1.up.sql)
 
 <br />
 
-### Run program
+### 4. Run program
 Three options are provided here to run gamecall. I have a preference for option 2 (automatically build and deploy on Digital Ocean), but use what suits your requirements.
 
 
@@ -84,7 +87,7 @@ Three options are provided here to run gamecall. I have a preference for option 
 DATABASE_URL=<your-database-connection-string> cargo build --release
 cargo run --release 
 ```
-<br /><br />
+<br />
 
 #### Option 2: Automatically build and run with Digital Ocean
 
@@ -99,7 +102,7 @@ cargo run --release
 
 Now everytime you push a commit to your repository, it will be build and deployed automatically on DigitalOcean.
 
-<br /><br />
+<br />
 
 #### Option 3: Build and run using Docker
 
@@ -108,7 +111,12 @@ docker build -t webcall .
 docker run -p 8080:8080 -t webcall
 ```
 
+<br />
 
+### 5. Result: video demo
+
+View a video demo of the result here:
+[Video demo](https://github.com/Nelis-sol/gamecall/blob/main/gamecall-why-dot-fun-video-demo.mp4)
 
 
 
