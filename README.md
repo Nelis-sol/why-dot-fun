@@ -117,7 +117,10 @@ docker run -p 8080:8080 -t webcall
 View a video demo of the result here:
 [Video demo](https://github.com/Nelis-sol/gamecall/blob/main/gamecall-why-dot-fun-video-demo.mp4)
 
+<br />
 
+# Contact
+Contact me via email (nelis.sol@protonmail.com) or on X (@nelis-sol)
 
-
+<br /><br />
 
