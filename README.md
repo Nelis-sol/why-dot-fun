@@ -19,14 +19,15 @@ Additionally, the AI agent has capabailities to **generate video content** based
 <br />
 
 ## Built with
-  * Rust
-  * Axum  
-  * Tokio  
-  * Solana
-<br />
+
+  * **Rust**
+  * **Axum**  
+  * **Tokio**  
+  * **Solana**
+    
   * Postgresql
   * ffmpeg
-<br />
+    
   * DigitalOcean (video storage)
   * Twilio (voice and text)
   * Twitter/X (post to social)
@@ -34,7 +35,9 @@ Additionally, the AI agent has capabailities to **generate video content** based
 <br />
 ____
 <br />
+
 ## Install & run
+
 ### 1. Install Rust, Cargo
 ```
 $ curl https://sh.rustup.rs -sSf | sh
@@ -51,6 +54,7 @@ $ rustup update
 Some environment variables are required to be present during the build phase (e.g. the database url for sqlx). So setting up the environment variables before continuing the next steps is recommended. The database url is required to set up before building, the others are optional. 
 
 <br />
+
 ### 3. Set up tables in postgresql database
 
    #### 3.1. Option 1: Use sqlx migrations
@@ -65,6 +69,7 @@ Some environment variables are required to be present during the build phase (e.
    ![alt_text](https://github.com/Nelis-sol/gamecall/blob/main/migrations/20241113102717_1.up.sql "Queries to set up tables")
 
 <br />
+
 ### Run program
 Three options are provided here to run gamecall. I have a preference for option 2 (automatically build and deploy on Digital Ocean), but use what suits your requirements.
 
