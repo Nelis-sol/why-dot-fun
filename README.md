@@ -16,25 +16,24 @@ Additionally, the AI agent has capabailities to **generate video content** based
   * moderate/decide if content is suitable for posting on socials
   * write the tweet and post it on X witht the generated video of the call interaction
 
-<br /><br />
+<br />
 
 ## Built with
-  - Rust
-  - Axum  
-  - Tokio  
-  - Solana
+  * Rust
+  * Axum  
+  * Tokio  
+  * Solana
 <br />
-  - Postgresql
-  - ffmpeg
+  * Postgresql
+  * ffmpeg
 <br />
-  - DigitalOcean (video storage)
-  - Twilio (voice and text)
-  - Twitter/X (post to social)
+  * DigitalOcean (video storage)
+  * Twilio (voice and text)
+  * Twitter/X (post to social)
 
 <br />
 ____
 <br />
-
 ## Install & run
 ### 1. Install Rust, Cargo
 ```
@@ -52,51 +51,51 @@ $ rustup update
 Some environment variables are required to be present during the build phase (e.g. the database url for sqlx). So setting up the environment variables before continuing the next steps is recommended. The database url is required to set up before building, the others are optional. 
 
 <br />
-
 ### 3. Set up tables in postgresql database
 
-   #### 3.1 Option 1: Use sqlx migrations
+   #### 3.1. Option 1: Use sqlx migrations
    Run sqlx migration to set up tables in the database. 
    ```
    sqlx migrate run
    ```
 
-   #### 3.2 Option 2: Set up tables manually
+   #### 3.2. Option 2: Set up tables manually
    Set up tables in the database manually. 
    Use the queries in this file: 
    ![alt_text](https://github.com/Nelis-sol/gamecall/blob/main/migrations/20241113102717_1.up.sql "Queries to set up tables")
 
-
+<br />
 ### Run program
+Three options are provided here to run gamecall. I have a preference for option 2 (automatically build and deploy on Digital Ocean), but use what suits your requirements.
 
-   #### Option 1: Build and run directly
+#### Option 1: Build and run directly
 
-   ```
-   DATABASE_URL=<your-database-connection-string> cargo build --release
-   cargo run --release 
-   ```
-   <br />
+```
+DATABASE_URL=<your-database-connection-string> cargo build --release
+cargo run --release 
+```
+<br /><br />
 
-   #### Option 2: Automatically build and run with Digital Ocean
+#### Option 2: Automatically build and run with Digital Ocean
 
-   1. Login to Digital Ocean
-   2. App Platform
-   3. Create app
-   4. Authorize Digital Ocean to access repositories
-   5. Select your (gamecall) repository 
-   6. Select auto-deploy (if not selected already)
-   7. Set environment variables
-   8. Complete rest of the set up with default settings
+1. Login to Digital Ocean
+2. App Platform
+3. Create app
+4. Authorize Digital Ocean to access repositories
+5. Select your (gamecall) repository 
+6. Select auto-deploy (if not selected already)
+7. Set environment variables
+8. Complete rest of the set up with default settings
 
-   Now everytime you push a commit to your repository, it will be build and deployed automatically on DigitalOcean.
-   <br />
+Now everytime you push a commit to your repository, it will be build and deployed automatically on DigitalOcean.
+<br /><br />
 
-   #### Option 3: Build and run using Docker
+#### Option 3: Build and run using Docker
 
-   ```
-   docker build -t webcall .
-   docker run -p 8080:8080 -t webcall
-   ```
+ ```
+docker build -t webcall .
+docker run -p 8080:8080 -t webcall
+```
 
 
 
