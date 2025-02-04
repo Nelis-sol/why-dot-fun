@@ -1,4 +1,5 @@
-twilio-rs (forked and adapted from https://github.com/neil-lobracco/twilio-rs)
+twilio-rs 
+(forked and adapted from https://github.com/neil-lobracco/twilio-rs)
 =========
 [![](http://meritbadge.herokuapp.com/twilio)](https://crates.io/crates/twilio)
 
