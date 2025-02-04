@@ -116,7 +116,7 @@ docker run -p 8080:8080 -t gamecall
 ### 5. Result: video demo
 
 View a video demo of the result here:
-[Video demo](https://github.com/Nelis-sol/gamecall/blob/main/gamecall-why-dot-fun-video-demo.mp4)
+[Video demo](https://github.com/Nelis-sol/why-dot-fun/blob/main/gamecall-why-dot-fun-video-demo.mp4)
 
 <br />
 
